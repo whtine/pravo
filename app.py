@@ -127,7 +127,7 @@ def save_review():
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute(
-            "INSERT INTO reviews (name, role, text, rating) VALUES (%s, %s, %s, %s)",
+            "INSERT INTO reviews (name, role, "text", rating) VALUES (%s, %s, %s, %s)",
             (name, role, review_text, rating)
         )
         conn.commit()
@@ -160,7 +160,7 @@ def get_reviews():
         conn = get_db_connection()
         cur = conn.cursor()
         cur.execute("""
-            SELECT name, role, text, rating, created_at
+            SELECT name, role, "text", rating, created_at
             FROM reviews
             ORDER BY created_at DESC
             LIMIT 20
@@ -172,17 +172,17 @@ def get_reviews():
         reviews = []
         for r in rows:
             reviews.append({
-                "name": r[0],
-                "role": r[1] or "",
-                "text": r[2],
-                "rating": r[3] or 5,
+                "name":       r[0] or "",
+                "role":       r[1] or "",
+                "text":       r[2] or "",
+                "rating":     int(r[3]) if r[3] else 5,
                 "created_at": r[4].isoformat() if r[4] else ""
             })
         return jsonify({"reviews": reviews})
 
     except Exception as e:
-        print(f"DB error: {e}")
-        return jsonify({"reviews": []}), 500
+        print(f"DB error in get_reviews: {e}")
+        return jsonify({"reviews": [], "error": str(e)}), 500
 
 
 # --- TELEGRAM BOT ---
@@ -213,7 +213,7 @@ def webhook():
         elif text == '/reviews':
             conn = get_db_connection()
             cur = conn.cursor()
-            cur.execute("SELECT name, role, text, rating FROM reviews ORDER BY created_at DESC LIMIT 5")
+            cur.execute("SELECT name, role, "text", rating FROM reviews ORDER BY created_at DESC LIMIT 5")
             revs = cur.fetchall()
             cur.close()
             conn.close()
