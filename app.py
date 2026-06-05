@@ -58,7 +58,7 @@ init_db()
 def index():
     return render_template('index.html')
 
-@app.route('/service')
+@app.route('/services')
 def service_page():
     return render_template('service.html')
 
