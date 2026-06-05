@@ -3061,6 +3061,7 @@
             <textarea id="reviewText" placeholder="Розкажіть про свій досвід..."></textarea>
           </div>
           <button class="btn-primary" type="button" id="saveReviewButton">Зберегти відгук</button>
+<p id="reviewStatus" class="review-status"></p>
         </div>
       </div>
     </div>
@@ -3211,15 +3212,24 @@
     };
 
     const openReviewPanel = () => {
-      panelOverlay.classList.add('visible');
-      reviewPanel.classList.add('open');
-      infoPanel.classList.remove('open');
-      document.body.classList.add('panel-open');
-      panelOverlay.setAttribute('aria-hidden', 'false');
-      reviewPanel.setAttribute('aria-hidden', 'false');
-      reviewStatus.textContent = '';
-      reviewName.focus();
-    };
+    panelOverlay.classList.add('visible');
+    reviewPanel.classList.add('open');
+    infoPanel.classList.remove('open');
+    document.body.classList.add('panel-open');
+    panelOverlay.setAttribute('aria-hidden', 'false');
+    reviewPanel.setAttribute('aria-hidden', 'false');
+    
+    // Проверяем наличие элемента перед использованием
+    const statusEl = document.getElementById('reviewStatus');
+    if (statusEl) {
+        statusEl.textContent = '';
+    }
+    
+    const nameEl = document.getElementById('reviewName');
+    if (nameEl) {
+        nameEl.focus();
+    }
+};
 
     const closePanel = () => {
       panelOverlay.classList.remove('visible');
