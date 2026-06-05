@@ -1,15 +1,37 @@
 import os
 import requests
 import psycopg2
+import threading
+import time
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
 DB_URL = os.environ.get("DATABASE_URL")
+SITE_URL = os.environ.get("SITE_URL", "https://ВАШ-САЙТ.onrender.com")  # ← вставь свой URL
 
 def get_db_connection():
     return psycopg2.connect(DB_URL, sslmode='require')
 
+# ══════════════════════════════════════
+#  ПИНГЕР — не даёт сайту засыпать
+# ══════════════════════════════════════
+def keep_alive():
+    while True:
+        time.sleep(14 * 60)  # каждые 14 минут
+        try:
+            requests.get(SITE_URL + "/ping", timeout=10)
+        except Exception:
+            pass
+
+@app.route('/ping')
+def ping():
+    return "ok", 200
+
+# Запускаем пингер в фоне при старте
+threading.Thread(target=keep_alive, daemon=True).start()
+
+# --- СТРАНИЦЫ ---
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -79,51 +101,50 @@ def save_review():
     cur.close()
     conn.close()
 
-    # Уведомление в Telegram о новом отзыве
     stars = '★' * rating + '☆' * (5 - rating)
     tg_text = (f"💬 <b>Новий відгук!</b>\n"
-               f"👤 {name}"
-               + (f" ({role})" if role else "") +
+               f"👤 {name}" + (f" ({role})" if role else "") +
                f"\n{stars} ({rating}/5)\n"
                f"📝 {review_text}")
     requests.post(
         f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
         data={"chat_id": os.environ['TG_CHAT_ID'], "text": tg_text, "parse_mode": "HTML"}
     )
-
     return jsonify({"status": "success"})
 
 
 @app.route('/get-reviews', methods=['GET'])
 def get_reviews():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    # Только одобренные (is_visible = true). Если колонки нет — убери WHERE
-    cur.execute("""
-        SELECT name, role, text, rating, created_at
-        FROM reviews
-        WHERE is_visible = true
-        ORDER BY created_at DESC
-        LIMIT 20
-    """)
-    rows = cur.fetchall()
-    cur.close()
-    conn.close()
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("""
+            SELECT name, role, text, rating, created_at
+            FROM reviews
+            WHERE is_visible = true
+            ORDER BY created_at DESC
+            LIMIT 20
+        """)
+        rows = cur.fetchall()
+        cur.close()
+        conn.close()
 
-    reviews = []
-    for r in rows:
-        reviews.append({
-            "name": r[0],
-            "role": r[1] or "",
-            "text": r[2],
-            "rating": r[3] or 5,
-            "created_at": r[4].isoformat() if r[4] else ""
-        })
+        reviews = []
+        for r in rows:
+            reviews.append({
+                "name": r[0],
+                "role": r[1] or "",
+                "text": r[2],
+                "rating": r[3] or 5,
+                "created_at": r[4].isoformat() if r[4] else ""
+            })
+        return jsonify({"reviews": reviews})
 
-    return jsonify({"reviews": reviews})
+    except Exception as e:
+        return jsonify({"reviews": [], "error": str(e)}), 500
 
 
-# --- TELEGRAM BOT WEBHOOK ---
+# --- TELEGRAM BOT ---
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
@@ -141,7 +162,7 @@ def webhook():
         cur.close()
         conn.close()
         if leads:
-            reply = "Останні 5 заявок:\n\n" + "\n".join(
+            reply = "Останні 5 заявок:\n\n" + "\n\n".join(
                 [f"👤 {l[0]}\n📞 {l[1]}\n🛠 {l[2]}" for l in leads]
             )
         else:
@@ -176,4 +197,3 @@ def webhook():
 
 if __name__ == '__main__':
     app.run()
-    
