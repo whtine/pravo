@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
@@ -743,9 +743,9 @@
               <h3>Залишити заявку</h3>
               <p class="form-card__sub">Опишіть ситуацію — ми зв'яжемось протягом 15 хвилин.</p>
 
-              <form id="quiz-form" method="post" action="form-handler.php">
+              <form id="quiz-form" method="post" action="/send-request">
                 <input type="hidden" name="form_source" value="service-page">
-                <input type="hidden" name="page_source" value="service">
+                <input type="hidden" name="page_source"value="{{ request.path }}">
 
                 <div class="form-group">
                   <label class="form-label" for="quiz-name">Ваше ім'я</label>
