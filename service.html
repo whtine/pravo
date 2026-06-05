@@ -1,229 +1,397 @@
 <!DOCTYPE html>
 <html lang="uk">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Всі послуги — Нотаріус у Чехії</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    :root {
-      --dark:      #0d1f12;
-      --dark-2:    #122418;
-      --green:     #1a3a20;
-      --green-mid: #24542d;
-      --gold:      #c9a84c;
-      --gold-light:#e3c478;
-      --gold-dim:  rgba(201,168,76,0.18);
-      --cream:     #f5edd8;
-      --cream-dim: rgba(245,237,216,0.65);
-      --white:     #ffffff;
-      --text-muted:rgba(245,237,216,0.55);
-      --border:    rgba(201,168,76,0.18);
-      --border-hover: rgba(201,168,76,0.45);
-      --radius-card: 20px;
-      --shadow: 0 8px 40px rgba(0,0,0,0.35);
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    html { scroll-behavior: smooth; }
+    :root {
+      --brown: #4a2e12;
+      --brown-mid: #6b4220;
+      --brown-light: #8a5e38;
+      --brown-pale: #b8906a;
+      --cream: #f5e6d3;
+      --cream-light: #fbf2e8;
+      --cream-mid: #ecdcc6;
+      --gold: #cd7f32;
+      --gold-light: #e09a50;
+      --gold-dim: #a86428;
+      --white: #ffffff;
+      --text-dark: #1c1208;
+      --line: rgba(74, 46, 18, 0.12);
+      --line-soft: rgba(74, 46, 18, 0.07);
+      --shadow-card: 0 4px 24px rgba(74, 46, 18, 0.08);
+      --shadow-deep: 0 12px 40px rgba(74, 46, 18, 0.13);
+      --radius-card: 20px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       font-family: 'Jost', sans-serif;
-      background: var(--dark);
-      color: var(--cream);
-      min-height: 100vh;
+      font-weight: 300;
+      background: var(--cream-light);
+      color: var(--text-dark);
+      -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
-    a { color: inherit; text-decoration: none; }
-
-    /* ─── NOISE TEXTURE OVERLAY ─── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0; pointer-events: none; z-index: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      opacity: 0.6;
-    }
-
-    /* ─── DECORATIVE BG CIRCLES ─── */
-    .bg-glow {
-      position: fixed; border-radius: 50%; pointer-events: none; z-index: 0;
-      filter: blur(80px);
-    }
-    .bg-glow-1 {
-      width: 600px; height: 600px;
-      top: -200px; right: -200px;
-      background: radial-gradient(circle, rgba(26,58,32,0.5) 0%, transparent 70%);
-    }
-    .bg-glow-2 {
-      width: 500px; height: 500px;
-      bottom: 10%; left: -150px;
-      background: radial-gradient(circle, rgba(201,168,76,0.07) 0%, transparent 70%);
+    a {
+      color: inherit;
+      text-decoration: none;
     }
 
     /* ─── HEADER ─── */
     header {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(13,31,18,0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border);
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: var(--brown);
+      border-bottom: 1px solid rgba(205, 127, 50, 0.3);
     }
+
     .header__inner {
-      max-width: 1200px; margin: 0 auto; padding: 0 32px;
-      display: flex; align-items: center; justify-content: space-between;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       min-height: 72px;
     }
+
     .logo {
-      display: flex; align-items: center; gap: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
+
     .logo__seal {
-      width: 42px; height: 42px; border-radius: 50%;
-      border: 1px solid var(--gold);
-      display: grid; place-items: center;
-      color: var(--gold); font-family: 'Cormorant Garamond', serif;
-      font-size: 18px; font-weight: 700; letter-spacing: 0.02em;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      border: 1px solid rgba(245, 230, 211, 0.3);
+      display: grid;
+      place-items: center;
+      color: var(--cream);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
       position: relative;
+      background: rgba(255, 255, 255, 0.07);
     }
+
     .logo__seal::before {
       content: '';
-      position: absolute; inset: 3px; border-radius: 50%;
-      border: 1px solid rgba(201,168,76,0.3);
+      position: absolute;
+      inset: 3px;
+      border-radius: 50%;
+      border: 1px solid rgba(205, 127, 50, 0.25);
     }
-    .logo__info { display: flex; flex-direction: column; gap: 2px; }
+
+    .logo__info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
     .logo__name {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 17px; font-weight: 700; letter-spacing: 0.06em;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
       color: var(--cream);
     }
+
     .logo__sub {
-      font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
       color: var(--gold);
     }
-    nav ul { display: flex; gap: 2rem; list-style: none; }
-    nav a {
-      font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--cream-dim); transition: color 0.2s;
-    }
-    nav a:hover, nav a.active { color: var(--gold); }
 
-    /* ─── CONTAINER ─── */
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 32px; position: relative; z-index: 1; }
+    nav ul {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    nav a {
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(245, 230, 211, 0.75);
+      transition: color 0.2s;
+    }
+
+    nav a:hover,
+    nav a.active {
+      color: var(--gold-light);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 32px;
+      position: relative;
+      z-index: 1;
+    }
 
     /* ─── HERO ─── */
     .hero {
-      padding: 140px 0 60px;
-      position: relative; overflow: hidden;
+      padding: 130px 0 64px;
+      background: var(--cream);
+      position: relative;
     }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+
     .hero__ornament {
-      position: absolute; top: 100px; right: -60px;
-      width: 480px; height: 480px; opacity: 0.07;
+      position: absolute;
+      top: 90px;
+      right: -60px;
+      width: 420px;
+      height: 420px;
+      opacity: 0.06;
       pointer-events: none;
     }
+
     .hero__label {
-      display: inline-flex; align-items: center; gap: 10px;
-      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 1.4rem;
-      opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.4rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.1s forwards;
     }
-    .hero__label::before, .hero__label::after {
-      content: ''; display: block; width: 28px; height: 1px; background: var(--gold);
+
+    .hero__label::before,
+    .hero__label::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--gold-dim);
     }
+
     .hero__breadcrumbs {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12px; color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--brown-pale);
       margin-bottom: 2rem;
-      opacity: 0; animation: fadeUp 0.7s 0.15s forwards;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.15s forwards;
     }
-    .hero__breadcrumbs a:hover { color: var(--gold); }
-    .hero__breadcrumbs span { color: var(--gold); opacity: 0.5; }
+
+    .hero__breadcrumbs a {
+      color: var(--brown-mid);
+    }
+
+    .hero__breadcrumbs a:hover {
+      color: var(--gold);
+    }
+
+    .hero__breadcrumbs span {
+      color: var(--gold);
+      opacity: 0.6;
+    }
 
     .hero__title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: clamp(46px, 5vw, 72px);
-      font-weight: 600; line-height: 1.04;
-      color: var(--cream);
+      font-size: clamp(46px, 5vw, 68px);
+      font-weight: 600;
+      line-height: 1.06;
+      color: var(--brown);
       margin-bottom: 1.4rem;
-      opacity: 0; animation: fadeUp 0.7s 0.25s forwards;
+      letter-spacing: -0.01em;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.25s forwards;
     }
+
     .hero__title em {
-      font-style: italic; color: var(--gold);
+      font-style: italic;
+      color: var(--gold);
     }
+
     .hero__desc {
-      max-width: 580px;
-      font-size: 15px; line-height: 1.85;
-      color: var(--cream-dim);
+      max-width: 560px;
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--brown-light);
       margin-bottom: 2rem;
-      opacity: 0; animation: fadeUp 0.7s 0.35s forwards;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.35s forwards;
     }
+
     .hero__actions {
-      display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2.5rem;
-      opacity: 0; animation: fadeUp 0.7s 0.45s forwards;
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-bottom: 2.5rem;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.45s forwards;
     }
+
     .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 0.9rem 1.8rem; border-radius: 999px;
-      font-size: 12px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-      transition: all 0.25s; border: none; cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0.9rem 1.8rem;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: all 0.25s;
+      border: none;
+      cursor: pointer;
     }
+
     .btn--gold {
-      background: var(--gold); color: var(--dark);
+      background: var(--gold);
+      color: var(--white);
     }
-    .btn--gold:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    .btn--gold:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+    }
+
     .btn--outline {
-      background: transparent; border: 1px solid var(--border-hover); color: var(--cream);
+      background: transparent;
+      border: 1px solid var(--line);
+      color: var(--brown-mid);
     }
-    .btn--outline:hover { border-color: var(--gold); color: var(--gold); transform: translateY(-1px); }
+
+    .btn--outline:hover {
+      border-color: var(--gold-dim);
+      color: var(--gold);
+      transform: translateY(-1px);
+    }
 
     .hero__pills {
-      display: flex; flex-wrap: wrap; gap: 10px;
-      opacity: 0; animation: fadeUp 0.7s 0.55s forwards;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.55s forwards;
     }
+
     .pill {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 999px; padding: 0.6rem 1.1rem;
-      font-size: 12px; letter-spacing: 0.06em; color: var(--cream-dim);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 0.6rem 1.1rem;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      color: var(--brown-light);
+      box-shadow: var(--shadow-card);
     }
+
     .pill::before {
-      content: ''; width: 5px; height: 5px; border-radius: 50%;
+      content: '';
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
       background: var(--gold);
     }
 
     /* ─── DIVIDER ─── */
     .divider {
-      display: flex; align-items: center; gap: 16px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
       margin: 20px 0 48px;
-      opacity: 0; animation: fadeUp 0.7s 0.6s forwards;
-    }
-    .divider__line { flex: 1; height: 1px; background: var(--border); }
-    .divider__ornament {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 22px; color: var(--gold); opacity: 0.6;
+      opacity: 0;
+      animation: fadeUp 0.7s 0.6s forwards;
     }
 
-    /* ─── SERVICES SECTION ─── */
+    .divider__line {
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    .divider__ornament {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      color: var(--gold-dim);
+      opacity: 0.7;
+    }
+
+    /* ─── SECTION ─── */
     .section-header {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      margin-bottom: 40px; gap: 1rem;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 40px;
+      gap: 1rem;
     }
+
     .section-label {
-      font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: 0.7rem;
+      font-size: 10.5px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.7rem;
     }
+
     .section-title {
       font-family: 'Cormorant Garamond', serif;
       font-size: clamp(32px, 3vw, 44px);
-      font-weight: 600; line-height: 1.1; color: var(--cream);
+      font-weight: 600;
+      line-height: 1.1;
+      color: var(--brown);
     }
-    .section-title em { font-style: italic; color: var(--gold); }
+
+    .section-title em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
     .section-count {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 72px; font-weight: 600; line-height: 1;
-      color: rgba(201,168,76,0.1); letter-spacing: -0.02em;
+      font-size: 72px;
+      font-weight: 600;
+      line-height: 1;
+      color: rgba(74, 46, 18, 0.07);
+      letter-spacing: -0.02em;
       flex-shrink: 0;
     }
 
@@ -237,135 +405,468 @@
     /* ─── CARD ─── */
     .service-card {
       position: relative;
-      background: var(--dark-2);
-      border: 1px solid var(--border);
+      background: var(--white);
+      border: 1px solid var(--line);
       border-radius: var(--radius-card);
       overflow: hidden;
-      display: flex; flex-direction: column;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-card);
       transition: border-color 0.35s, transform 0.35s, box-shadow 0.35s;
       opacity: 0;
       transform: translateY(28px);
     }
+
     .service-card.visible {
       animation: cardIn 0.55s forwards;
     }
+
     .service-card:hover {
-      border-color: var(--border-hover);
+      border-color: rgba(205, 127, 50, 0.35);
       transform: translateY(-4px);
-      box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.12);
+      box-shadow: var(--shadow-deep);
     }
 
-    /* top gold line on hover */
     .service-card::before {
       content: '';
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
       background: linear-gradient(90deg, transparent, var(--gold), transparent);
-      transform: scaleX(0); transition: transform 0.4s;
+      transform: scaleX(0);
+      transition: transform 0.4s;
     }
-    .service-card:hover::before { transform: scaleX(1); }
+
+    .service-card:hover::before {
+      transform: scaleX(1);
+    }
 
     .service-card__img {
-      position: relative; overflow: hidden;
+      position: relative;
+      overflow: hidden;
       aspect-ratio: 16 / 9;
     }
+
     .service-card__img img {
-      width: 100%; height: 100%; display: block;
+      width: 100%;
+      height: 100%;
+      display: block;
       object-fit: cover;
-      filter: brightness(0.55) saturate(0.7);
+      filter: brightness(0.78) saturate(0.75);
       transition: transform 0.6s, filter 0.6s;
     }
+
     .service-card:hover .service-card__img img {
       transform: scale(1.05);
-      filter: brightness(0.65) saturate(0.85);
+      filter: brightness(0.85) saturate(0.9);
     }
+
     .service-card__img-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to bottom, transparent 30%, var(--dark-2) 100%);
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, transparent 30%, rgba(255, 255, 255, 0.15) 100%);
     }
+
     .service-card__num {
-      position: absolute; top: 14px; right: 16px;
+      position: absolute;
+      top: 14px;
+      right: 16px;
       font-family: 'Cormorant Garamond', serif;
-      font-size: 13px; font-weight: 600; letter-spacing: 0.1em;
-      color: var(--gold); opacity: 0.7;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      color: var(--cream);
+      opacity: 0.85;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
     }
 
     .service-card__body {
       padding: 1.4rem 1.6rem 1.8rem;
-      display: flex; flex-direction: column; gap: 0.85rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
       flex: 1;
     }
+
     .service-card__tag {
-      display: inline-flex; align-items: center; gap: 6px;
-      font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
       color: var(--gold);
     }
+
     .service-card__tag::before {
-      content: ''; width: 16px; height: 1px; background: var(--gold);
+      content: '';
+      width: 16px;
+      height: 1px;
+      background: var(--gold-dim);
     }
+
     .service-card__title {
       font-family: 'Cormorant Garamond', serif;
-      font-size: 1.2rem; font-weight: 600; line-height: 1.25;
-      color: var(--cream);
+      font-size: 1.2rem;
+      font-weight: 600;
+      line-height: 1.25;
+      color: var(--brown);
     }
+
     .service-card__text {
-      font-size: 13px; line-height: 1.8;
-      color: var(--text-muted); flex: 1;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--brown-light);
+      flex: 1;
     }
+
     .service-card__link {
-      display: inline-flex; align-items: center; gap: 8px;
-      font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
-      color: var(--gold); margin-top: 0.4rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: 0.4rem;
       transition: gap 0.2s;
     }
-    .service-card__link:hover { gap: 14px; }
-    .service-card__link svg {
-      width: 16px; height: 16px; transition: transform 0.2s;
+
+    .service-card__link:hover {
+      gap: 14px;
+      color: var(--gold-dim);
     }
-    .service-card__link:hover svg { transform: translateX(4px); }
+
+    .service-card__link svg {
+      width: 16px;
+      height: 16px;
+      transition: transform 0.2s;
+    }
+
+    .service-card__link:hover svg {
+      transform: translateX(4px);
+    }
 
     /* ─── FOOTER ─── */
     footer {
-      background: var(--dark-2);
-      border-top: 1px solid var(--border);
+      background: var(--brown);
+      border-top: 1px solid rgba(205, 127, 50, 0.25);
       padding: 48px 0 28px;
-      position: relative; z-index: 1;
+      position: relative;
+      z-index: 1;
     }
+
     .footer__inner {
-      display: flex; align-items: center; justify-content: space-between;
-      flex-wrap: wrap; gap: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
     }
-    .footer__copy { font-size: 13px; color: var(--text-muted); }
-    .footer__nav { display: flex; gap: 2rem; list-style: none; }
-    .footer__nav a { font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); transition: color 0.2s; }
-    .footer__nav a:hover { color: var(--gold); }
+
+    .footer__copy {
+      font-size: 13px;
+      color: rgba(245, 230, 211, 0.5);
+    }
+
+    .footer__nav {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+    }
+
+    .footer__nav a {
+      font-size: 12px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(245, 230, 211, 0.65);
+      transition: color 0.2s;
+    }
+
+    .footer__nav a:hover {
+      color: var(--gold-light);
+    }
 
     /* ─── ANIMATIONS ─── */
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(18px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     @keyframes cardIn {
-      from { opacity: 0; transform: translateY(28px); }
-      to   { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(28px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     /* ─── RESPONSIVE ─── */
     @media (max-width: 1024px) {
-      .services__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .services__grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
+
     @media (max-width: 640px) {
-      .header__inner { padding: 0 16px; }
-      .container { padding: 0 16px; }
-      nav ul { gap: 1.2rem; }
-      .services__grid { grid-template-columns: 1fr; }
-      .section-count { display: none; }
+      .header__inner {
+        padding: 0 16px;
+      }
+
+      .container {
+        padding: 0 16px;
+      }
+
+      nav ul {
+        gap: 1.2rem;
+      }
+
+      .services__grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-count {
+        display: none;
+      }
+    }
+
+    /* модал */
+    .modal-overlay {
+      display: none;
+      /* Приховано за замовчуванням */
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      position: relative;
+      padding: 2px;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      cursor: pointer;
+      font-size: 24px;
+    }
+
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 34px 30px;
+      box-shadow: var(--shadow-deep);
+    }
+
+    .form-card__eyebrow {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .form-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 8px;
+    }
+
+    .form-card__sub {
+      font-size: 13.5px;
+      color: var(--brown-pale);
+      line-height: 1.6;
+      margin-bottom: 26px;
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      color: var(--brown-pale);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--cream-light);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: 'Jost', sans-serif;
+      font-size: 14.5px;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .form-input::placeholder {
+      color: var(--brown-pale);
+    }
+
+    .form-input:focus {
+      border-color: var(--gold-dim);
+    }
+
+    .phone-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .phone-code {
+      width: 112px;
+      flex-shrink: 0;
+      background: var(--cream-light);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 13px 12px;
+      color: var(--text-dark);
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      transition: border-color .2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a5e38'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+
+    .phone-code:focus {
+      border-color: var(--gold-dim);
+    }
+
+    .form-submit {
+      width: 100%;
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 6px;
+      transition: background .2s, transform .15s;
+    }
+
+    .form-submit:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+    }
+
+    .form-note {
+      font-size: 11.5px;
+      color: var(--brown-pale);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .trust-badges {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .trust-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--cream-light);
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .trust-badge__icon {
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--cream-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .trust-badge__icon svg {
+      width: 14px;
+      height: 14px;
+      fill: var(--gold-dim);
+    }
+
+    .trust-badge__text {
+      font-size: 12.5px;
+      color: var(--brown-light);
+      line-height: 1.35;
+    }
+
+    .trust-badge__title {
+      font-weight: 500;
+      color: var(--brown-mid);
+      display: block;
+    }
+
+    textarea.form-input {
+      resize: vertical;
+
+      min-height: 80px;
+      font-family: 'Jost', sans-serif;
+
+    }
+
+    .form-group:has(textarea) {
+      margin-bottom: 20px;
+    }
+
+    select.form-input {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a5e38'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
     }
   </style>
 </head>
-<body>
 
-  <div class="bg-glow bg-glow-1"></div>
-  <div class="bg-glow bg-glow-2"></div>
+<body>
 
   <header>
     <div class="header__inner">
@@ -388,15 +889,14 @@
 
   <main>
     <section class="hero">
-      <!-- Decorative SVG ornament -->
       <svg class="hero__ornament" viewBox="0 0 400 400" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="200" cy="200" r="198" stroke="#c9a84c" stroke-width="1"/>
-        <circle cx="200" cy="200" r="170" stroke="#c9a84c" stroke-width="0.5"/>
-        <circle cx="200" cy="200" r="140" stroke="#c9a84c" stroke-width="1"/>
-        <path d="M200 2 L200 398 M2 200 L398 200" stroke="#c9a84c" stroke-width="0.4"/>
-        <path d="M200 2 L398 200 L200 398 L2 200 Z" stroke="#c9a84c" stroke-width="0.5"/>
-        <circle cx="200" cy="200" r="8" fill="#c9a84c" opacity="0.4"/>
-        <circle cx="200" cy="200" r="4" fill="#c9a84c" opacity="0.7"/>
+        <circle cx="200" cy="200" r="198" stroke="#cd7f32" stroke-width="1" />
+        <circle cx="200" cy="200" r="170" stroke="#cd7f32" stroke-width="0.5" />
+        <circle cx="200" cy="200" r="140" stroke="#cd7f32" stroke-width="1" />
+        <path d="M200 2 L200 398 M2 200 L398 200" stroke="#cd7f32" stroke-width="0.4" />
+        <path d="M200 2 L398 200 L200 398 L2 200 Z" stroke="#cd7f32" stroke-width="0.5" />
+        <circle cx="200" cy="200" r="8" fill="#cd7f32" opacity="0.4" />
+        <circle cx="200" cy="200" r="4" fill="#cd7f32" opacity="0.7" />
       </svg>
 
       <div class="container">
@@ -404,17 +904,18 @@
         <nav class="hero__breadcrumbs">
           <a href="/">Головна</a>
           <span>/</span>
-          <span style="color: var(--cream-dim);">Послуги</span>
+          <span style="color: var(--brown-light);">Послуги</span>
         </nav>
         <h1 class="hero__title">
           Усі наші юридичні<br><em>послуги в Чехії</em>
         </h1>
         <p class="hero__desc">
-          Повний перелік нотаріальних послуг для українців у Чехії — довіреності, засвідчення документів, спадщина та нерухомість.
+          Повний перелік нотаріальних послуг для українців у Чехії — довіреності, засвідчення документів, спадщина та
+          нерухомість.
         </p>
         <div class="hero__actions">
           <a class="btn btn--gold" href="#services-grid">Переглянути послуги</a>
-          <a class="btn btn--outline" href="#contacts">Консультація</a>
+          <a class="btn btn--outline consultation">Консультація</a>
         </div>
         <div class="hero__pills">
           <span class="pill">Без передоплат</span>
@@ -425,7 +926,8 @@
       </div>
     </section>
 
-    <section id="services-grid" style="padding: 0 0 80px; position: relative; z-index: 1;">
+    <section id="services-grid"
+      style="padding: 0 0 80px; background: var(--cream-light); position: relative; z-index: 1;">
       <div class="container">
         <div class="divider">
           <div class="divider__line"></div>
@@ -452,10 +954,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Нерухомість</span>
               <h2 class="service-card__title">Довіреність на нерухоме майно</h2>
-              <p class="service-card__text">Оформлення генеральної довіреності для продажу, купівлі, оренди або управління квартирою, будинком чи землею.</p>
+              <p class="service-card__text">Оформлення генеральної довіреності для продажу, купівлі, оренди або
+                управління квартирою, будинком чи землею.</p>
               <a class="service-card__link" href="/services/dovirenist-na-neruhome-majno-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -469,10 +974,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Реєстрація</span>
               <h2 class="service-card__title">Довіреність на реєстрацію місця проживання</h2>
-              <p class="service-card__text">Допомога з пропискою та зняттям з реєстрації в мерії без особистої присутності клієнта.</p>
+              <p class="service-card__text">Допомога з пропискою та зняттям з реєстрації в мерії без особистої
+                присутності клієнта.</p>
               <a class="service-card__link" href="/services/dovirenist-na-reyestracziyu-misczya-prozhivannya-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -486,10 +994,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Спадщина</span>
               <h2 class="service-card__title">Довіреність на отримання спадщини</h2>
-              <p class="service-card__text">Повноваження для отримання документів та представництва спадкоємців у державних органах Чехії.</p>
+              <p class="service-card__text">Повноваження для отримання документів та представництва спадкоємців у
+                державних органах Чехії.</p>
               <a class="service-card__link" href="/services/dovirenist-na-otrimannya-spadshhini-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -503,10 +1014,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Представництво</span>
               <h2 class="service-card__title">Довіреність на представництво інтересів</h2>
-              <p class="service-card__text">Документ для представника, який діє від вашого імені у фінансових, юридичних та побутових справах.</p>
+              <p class="service-card__text">Документ для представника, який діє від вашого імені у фінансових, юридичних
+                та побутових справах.</p>
               <a class="service-card__link" href="/services/dovirenist-na-predstavnicztvo-interesiv-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -520,10 +1034,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Засвідчення</span>
               <h2 class="service-card__title">Нотаріальне завірення документів</h2>
-              <p class="service-card__text">Завірення копій, перекладів та підписів для банків, судів і консульств в Чехії та Україні.</p>
+              <p class="service-card__text">Завірення копій, перекладів та підписів для банків, судів і консульств в
+                Чехії та Україні.</p>
               <a class="service-card__link" href="/services/notarialne-zavirennya-dokumentiv-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -537,10 +1054,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Банківські операції</span>
               <h2 class="service-card__title">Довіреність у банк</h2>
-              <p class="service-card__text">Оформлення документа для зняття, внесення коштів або подачі заяв від імені клієнта в будь-якому банку.</p>
+              <p class="service-card__text">Оформлення документа для зняття, внесення коштів або подачі заяв від імені
+                клієнта в будь-якому банку.</p>
               <a class="service-card__link" href="/services/dovirenist-v-bank-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -554,10 +1074,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Управління майном</span>
               <h2 class="service-card__title">Довіреність на розпорядження майном</h2>
-              <p class="service-card__text">Генеральна довіреність для продажу, оренди або передачі прав на вантажі та будь-яке майно.</p>
+              <p class="service-card__text">Генеральна довіреність для продажу, оренди або передачі прав на вантажі та
+                будь-яке майно.</p>
               <a class="service-card__link" href="/services/dovirenist-na-rozporyadzhennya-majnom-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -571,10 +1094,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Транспорт</span>
               <h2 class="service-card__title">Договір купівлі-продажу авто</h2>
-              <p class="service-card__text">Підготуємо договір і довіреність для продажу, купівлі або передачі автомобіля з повним юридичним супроводом.</p>
+              <p class="service-card__text">Підготуємо договір і довіреність для продажу, купівлі або передачі
+                автомобіля з повним юридичним супроводом.</p>
               <a class="service-card__link" href="/services/dogovir-kupivli-prodazhu-avto-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -588,10 +1114,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Документи</span>
               <h2 class="service-card__title">Довіреність на отримання документів</h2>
-              <p class="service-card__text">Оформлення довіреності для отримання довідок, листів, медичних документів та судових рішень.</p>
+              <p class="service-card__text">Оформлення довіреності для отримання довідок, листів, медичних документів та
+                судових рішень.</p>
               <a class="service-card__link" href="/services/dovirenist-na-otrimannya-dokumentiv-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -605,10 +1134,13 @@
             <div class="service-card__body">
               <span class="service-card__tag">Діти та сім'я</span>
               <h2 class="service-card__title">Дозвіл на виїзд дитини за кордон</h2>
-              <p class="service-card__text">Швидке оформлення нотаріального дозволу для виїзду дитини з одним із батьків або супроводжуючим.</p>
+              <p class="service-card__text">Швидке оформлення нотаріального дозволу для виїзду дитини з одним із батьків
+                або супроводжуючим.</p>
               <a class="service-card__link" href="/services/dozvil-na-viyizd-ditini-za-kordon-chehiya/">
                 Детальніше
-                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6z" />
+                </svg>
               </a>
             </div>
           </article>
@@ -641,6 +1173,63 @@
     </div>
   </footer>
 
+  <!-- Модальне вікно -->
+  <div id="modal-form" class="modal-overlay">
+    <div class="modal-content">
+      <span class="modal-close">&times;</span>
+      <div class="form-card">
+        <p class="form-card__eyebrow">Безкоштовна консультація</p>
+        <h3>Залишити заявку</h3>
+        <p class="form-card__sub">Опишіть ситуацію — ми зв'яжемось протягом 15 хвилин.</p>
+
+        <form id="quiz-form" method="post" action="form-handler.php">
+          <input type="hidden" name="form_source" value="service-page">
+          <input type="hidden" name="page_source" value="service">
+
+          <div class="form-group">
+            <label class="form-label" for="quiz-name">Ваше ім'я</label>
+            <input id="quiz-name" name="name" type="text" class="form-input" placeholder="Ім'я та прізвище" required="">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="quiz-service">Оберіть послугу</label>
+            <select id="quiz-service" name="service" class="form-input" required>
+              <option value="" disabled selected>Оберіть варіант...</option>
+              <option value="consultation">Юридична консультація</option>
+              <option value="documentation">Підготовка документів</option>
+              <option value="representation">Представництво в органах</option>
+              <option value="other">Інше</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="quiz-message">Ваше запитання</label>
+            <textarea id="quiz-message" name="message" class="form-input" placeholder="Коротко опишіть вашу ситуацію"
+              rows="3"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="quiz-phone">Телефон</label>
+            <div class="phone-row">
+              <select class="phone-code" name="country_code" id="country-code">
+                <option value="+420">🇨🇿 +420</option>
+                <option value="+380">🇺🇦 +380</option>
+                <option value="+49">🇩🇪 +49</option>
+                <option value="+48">🇵🇱 +48</option>
+              </select>
+              <input id="quiz-phone" name="phone" type="tel" class="form-input" placeholder="Номер телефону"
+                required="">
+            </div>
+          </div>
+
+          <button type="submit" class="form-submit">Надіслати заявку</button>
+        </form>
+
+        <p class="form-note">Конфіденційно · Без спаму · Безкоштовно</p>
+      </div>
+    </div>
+  </div>
+
   <script>
     const cards = document.querySelectorAll('.service-card');
     const observer = new IntersectionObserver((entries) => {
@@ -655,6 +1244,29 @@
     }, { threshold: 0.12 });
 
     cards.forEach(card => observer.observe(card));
+
+    const modal = document.getElementById('modal-form');
+    const consultation = document.querySelector('.consultation'); // Ваша кнопка
+    const closeBtn = document.querySelector('.modal-close');
+
+
+    consultation.addEventListener('click', (e) => {
+      e.preventDefault();
+      modal.style.display = 'flex';
+    });
+
+
+    closeBtn.addEventListener('click', () => {
+      modal.style.display = 'none';
+    });
+
+
+    window.addEventListener('click', (e) => {
+      if (e.target == modal) modal.style.display = 'none';
+    });
   </script>
+
+
 </body>
+
 </html>
