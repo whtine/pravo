@@ -1,0 +1,826 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Довіреність на нерухомість — Нотаріус у Чехії</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --brown:        #4a2e12;
+      --brown-mid:    #6b4220;
+      --brown-light:  #8a5e38;
+      --brown-pale:   #b8906a;
+      --cream:        #f5e6d3;
+      --cream-light:  #fbf2e8;
+      --cream-mid:    #ecdcc6;
+      --gold:         #cd7f32;
+      --gold-light:   #e09a50;
+      --gold-dim:     #a86428;
+      --green:        #1a3a20;
+      --white:        #ffffff;
+      --text-dark:    #1c1208;
+      --line:         rgba(74,46,18,0.12);
+      --line-soft:    rgba(74,46,18,0.07);
+      --shadow-card:  0 4px 24px rgba(74,46,18,0.08);
+      --shadow-deep:  0 12px 40px rgba(74,46,18,0.13);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      font-weight: 300;
+      background: var(--cream-light);
+      color: var(--text-dark);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; cursor: pointer; }
+    .container { max-width: 1160px; margin: 0 auto; padding: 0 28px; }
+
+    /* ─── HEADER ─── */
+    header {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 100;
+      background: var(--brown);
+      border-bottom: 1px solid rgba(205,127,50,0.3);
+    }
+
+    .header__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 70px;
+      padding: 0 28px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .logo__mark {
+      width: 42px; height: 42px;
+      border: 1px solid rgba(245,230,211,0.2);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(255,255,255,0.07);
+    }
+
+    .logo__mark svg { width: 20px; height: 20px; fill: var(--cream); }
+
+    .logo__title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 700;
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      color: var(--cream);
+      display: block;
+    }
+
+    .logo__sub {
+      font-size: 9.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--gold);
+      display: block;
+      margin-top: 2px;
+    }
+
+    nav { display: flex; align-items: center; gap: 2rem; list-style: none; }
+
+    nav a {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: rgba(245,230,211,0.85);
+      transition: color .2s;
+    }
+
+    nav a:hover { color: var(--gold-light); }
+
+    /* ─── HERO ─── */
+    .hero {
+      padding: 116px 0 72px;
+      background: var(--cream);
+      position: relative;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+    }
+
+    .breadcrumbs {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 12.5px; letter-spacing: 0.04em;
+      color: var(--brown-pale);
+      margin-bottom: 40px;
+    }
+
+    .breadcrumbs span { color: var(--gold); }
+    .breadcrumbs a { color: var(--brown-mid); }
+    .breadcrumbs a:hover { color: var(--gold); }
+
+    .hero__grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 52px;
+      align-items: start;
+    }
+
+    .hero__eyebrow {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 18px;
+      display: flex; align-items: center; gap: 12px;
+    }
+
+    .hero__eyebrow::before {
+      content: '';
+      display: block;
+      width: 28px; height: 1px;
+      background: var(--gold-dim);
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(36px, 4.2vw, 54px);
+      font-weight: 600;
+      line-height: 1.08;
+      color: var(--brown);
+      margin-bottom: 22px;
+      letter-spacing: -0.01em;
+    }
+
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero__lead {
+      font-size: 15.5px;
+      line-height: 1.85;
+      color: var(--brown-light);
+      max-width: 520px;
+      margin-bottom: 32px;
+    }
+
+    .hero__facts {
+      display: flex; flex-wrap: wrap; gap: 10px 24px;
+      margin-bottom: 36px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .fact {
+      display: flex; align-items: center; gap: 9px;
+    }
+
+    .fact__dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .fact__text {
+      font-size: 13px;
+      color: var(--brown-light);
+    }
+
+    .hero__actions {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 9px;
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      border-radius: 999px;
+      padding: 14px 28px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background .2s, transform .15s;
+    }
+
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    .btn-ghost {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: transparent;
+      color: var(--brown-mid);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 14px 24px;
+      font-size: 13px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: border-color .2s, color .2s;
+    }
+
+    .btn-ghost:hover { border-color: var(--gold-dim); color: var(--gold); }
+
+    .hero__note {
+      font-size: 12px;
+      color: var(--brown-pale);
+      letter-spacing: 0.03em;
+      margin-top: 12px;
+    }
+
+    /* info cards */
+    .cards-col {
+      display: flex; flex-direction: column; gap: 10px;
+      padding-top: 8px;
+    }
+
+    .info-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow-card);
+      display: flex; align-items: center; gap: 16px;
+      transition: box-shadow .2s, border-color .2s;
+    }
+
+    .info-card:hover {
+      border-color: rgba(205,127,50,0.3);
+      box-shadow: var(--shadow-deep);
+    }
+
+    .info-card__icon {
+      width: 40px; height: 40px; flex-shrink: 0;
+      border-radius: 12px;
+      background: var(--cream-light);
+      border: 1px solid var(--line-soft);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .info-card__icon svg { width: 18px; height: 18px; fill: var(--gold); }
+
+    .info-card__label {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--brown-pale);
+      margin-bottom: 3px;
+    }
+
+    .info-card__value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 17px;
+      font-weight: 600;
+      color: var(--brown);
+      line-height: 1.2;
+    }
+
+    /* ─── CONTENT ─── */
+    .content-section {
+      padding: 72px 0 96px;
+      background: var(--cream-light);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 40px;
+      align-items: start;
+    }
+
+    /* article */
+    .article {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 48px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .section-label {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 10px;
+    }
+
+    .article h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 30px;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+
+    .article p {
+      font-size: 15px;
+      line-height: 1.85;
+      color: var(--brown-light);
+      margin-bottom: 18px;
+    }
+
+    .article h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--brown);
+      margin: 32px 0 16px;
+    }
+
+    .highlights {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 24px 0 32px;
+    }
+
+    .highlight-item {
+      background: var(--cream-light);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 20px;
+    }
+
+    .highlight-item__title {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--gold-dim);
+      margin-bottom: 5px;
+    }
+
+    .highlight-item__text {
+      font-size: 14px;
+      color: var(--brown-mid);
+      line-height: 1.5;
+    }
+
+    .steps {
+      list-style: none;
+      counter-reset: steps;
+    }
+
+    .steps li {
+      counter-increment: steps;
+      display: flex; gap: 18px;
+      padding: 16px 0;
+      border-bottom: 1px solid var(--line-soft);
+      font-size: 14.5px;
+      color: var(--brown-light);
+      line-height: 1.65;
+    }
+
+    .steps li:last-child { border-bottom: none; }
+
+    .steps li::before {
+      content: counter(steps, decimal-leading-zero);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--gold);
+      flex-shrink: 0;
+      width: 32px;
+      line-height: 1.1;
+    }
+
+    /* sidebar */
+    .sidebar {
+      position: sticky;
+      top: calc(70px + 20px);
+    }
+
+    .form-card {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 34px 30px;
+      box-shadow: var(--shadow-deep);
+    }
+
+    .form-card__eyebrow {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .form-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 26px;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 8px;
+    }
+
+    .form-card__sub {
+      font-size: 13.5px;
+      color: var(--brown-pale);
+      line-height: 1.6;
+      margin-bottom: 26px;
+    }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      color: var(--brown-pale);
+      margin-bottom: 6px;
+    }
+
+    .form-input {
+      width: 100%;
+      background: var(--cream-light);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 13px 16px;
+      font-family: 'Jost', sans-serif;
+      font-size: 14.5px;
+      color: var(--text-dark);
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .form-input::placeholder { color: var(--brown-pale); }
+    .form-input:focus { border-color: var(--gold-dim); }
+
+    .phone-row { display: flex; gap: 8px; }
+
+    .phone-code {
+      width: 112px; flex-shrink: 0;
+      background: var(--cream-light);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 13px 12px;
+      color: var(--text-dark);
+      font-family: 'Jost', sans-serif;
+      font-size: 14px;
+      outline: none;
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      transition: border-color .2s;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a5e38'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 28px;
+    }
+
+    .phone-code:focus { border-color: var(--gold-dim); }
+
+    .form-submit {
+      width: 100%;
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      border-radius: 12px;
+      padding: 15px;
+      font-family: 'Jost', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 6px;
+      transition: background .2s, transform .15s;
+    }
+
+    .form-submit:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+    .form-note {
+      font-size: 11.5px;
+      color: var(--brown-pale);
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .trust-badges {
+      display: flex; flex-direction: column; gap: 8px;
+      margin-top: 16px;
+    }
+
+    .trust-badge {
+      display: flex; align-items: center; gap: 12px;
+      background: var(--cream-light);
+      border: 1px solid var(--line-soft);
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+
+    .trust-badge__icon {
+      width: 30px; height: 30px; flex-shrink: 0;
+      border-radius: 8px;
+      background: var(--cream-mid);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .trust-badge__icon svg { width: 14px; height: 14px; fill: var(--gold-dim); }
+
+    .trust-badge__text {
+      font-size: 12.5px;
+      color: var(--brown-light);
+      line-height: 1.35;
+    }
+
+    .trust-badge__title {
+      font-weight: 500;
+      color: var(--brown-mid);
+      display: block;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--brown);
+      border-top: 1px solid rgba(205,127,50,0.25);
+      padding: 44px 0;
+    }
+
+    .footer__inner {
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 20px;
+    }
+
+    .footer__copy {
+      font-size: 12px;
+      color: rgba(245,230,211,0.55);
+      margin-top: 3px;
+    }
+
+    .footer__links {
+      display: flex; gap: 22px; list-style: none;
+    }
+
+    .footer__links a {
+      font-size: 12px;
+      color: rgba(245,230,211,0.7);
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      transition: color .2s;
+    }
+
+    .footer__links a:hover { color: var(--gold-light); }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 960px) {
+      .hero__grid { grid-template-columns: 1fr; gap: 40px; }
+      .cards-col { flex-direction: row; flex-wrap: wrap; }
+      .info-card { flex: 1 1 calc(50% - 5px); }
+      .content-grid { grid-template-columns: 1fr; }
+      .sidebar { position: static; }
+    }
+
+    @media (max-width: 600px) {
+      .hero { padding: 96px 0 56px; }
+      .highlights { grid-template-columns: 1fr; }
+      .info-card { flex: 1 1 100%; }
+      .article { padding: 28px 20px; }
+      .form-card { padding: 28px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="header__inner">
+      <a href="/" class="logo">
+        <div class="logo__mark">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="logo__title">НОТАРІУС</span>
+          <span class="logo__sub">Юридичні послуги у Чехії</span>
+        </div>
+      </a>
+      <nav>
+        <a href="/">Головна</a>
+        <a href="/service.html">Послуги</a>
+        <a href="#contacts">Контакти</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <div class="breadcrumbs">
+          <a href="/">Головна</a>
+          <span>/</span>
+          <a href="/service.html">Послуги</a>
+          <span>/</span>
+          <span style="color:var(--brown-mid)">Довіреність на нерухоме майно</span>
+        </div>
+
+        <div class="hero__grid">
+          <div>
+            <p class="hero__eyebrow">Нотаріальні послуги · Чехія</p>
+            <h1>Довіреність на<br><em>нерухоме майно</em><br>у Чехії</h1>
+            <p class="hero__lead">Передайте повноваження довіреній особі на продаж, оренду або управління майном — без особистої поїздки. Ми готуємо документи та супроводжуємо процес від початку до підпису.</p>
+
+            <div class="hero__facts">
+              <div class="fact"><span class="fact__dot"></span><span class="fact__text">Оформлення в Чехії або консульстві</span></div>
+              <div class="fact"><span class="fact__dot"></span><span class="fact__text">1–3 робочі дні</span></div>
+              <div class="fact"><span class="fact__dot"></span><span class="fact__text">Дистанційна підготовка документів</span></div>
+            </div>
+
+            <div class="hero__actions">
+              <button class="btn-primary" onclick="document.getElementById('contact-form').scrollIntoView({behavior:'smooth',block:'center'})">
+                Отримати консультацію
+              </button>
+              <button class="btn-ghost" onclick="document.getElementById('about').scrollIntoView({behavior:'smooth'})">
+                Дізнатись більше
+              </button>
+            </div>
+            <p class="hero__note">Відповідаємо протягом 15 хвилин</p>
+          </div>
+
+          <div class="cards-col">
+            <div class="info-card">
+              <div class="info-card__icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+              </div>
+              <div>
+                <p class="info-card__label">Місце оформлення</p>
+                <p class="info-card__value">Чехія або консульство</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card__icon">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+              </div>
+              <div>
+                <p class="info-card__label">Підготовка документів</p>
+                <p class="info-card__value">Дистанційно, під ваш запит</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card__icon">
+                <svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/></svg>
+              </div>
+              <div>
+                <p class="info-card__label">Юридичний супровід</p>
+                <p class="info-card__value">Особисто до підпису</p>
+              </div>
+            </div>
+            <div class="info-card">
+              <div class="info-card__icon">
+                <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+              </div>
+              <div>
+                <p class="info-card__label">Строк оформлення</p>
+                <p class="info-card__value">1–3 робочі дні</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="about">
+      <div class="container">
+        <div class="content-grid">
+
+          <div class="article">
+            <p class="section-label">Детальніше про послугу</p>
+            <h2>Як ми оформлюємо довіреність на нерухомість</h2>
+
+            <p>Довіреність на нерухоме майно в Чехії дозволяє власнику передати юридичні повноваження довіреній особі — для продажу, оренди, реєстрації або управління об'єктом без особистої присутності.</p>
+
+            <p>Ми беремо на себе весь процес — від збору та перекладу документів до нотаріального засвідчення та реєстрації в державних органах.</p>
+
+            <div class="highlights">
+              <div class="highlight-item">
+                <p class="highlight-item__title">Коли потрібна</p>
+                <p class="highlight-item__text">Продаж або оренда нерухомості без вашої присутності</p>
+              </div>
+              <div class="highlight-item">
+                <p class="highlight-item__title">Дистанційно</p>
+                <p class="highlight-item__text">Документи готуємо та погоджуємо онлайн</p>
+              </div>
+              <div class="highlight-item">
+                <p class="highlight-item__title">Мова</p>
+                <p class="highlight-item__text">Документи чеською та українською</p>
+              </div>
+              <div class="highlight-item">
+                <p class="highlight-item__title">Вартість</p>
+                <p class="highlight-item__text">Без прихованих платежів — дізнайтесь на консультації</p>
+              </div>
+            </div>
+
+            <h3>Що входить до послуги</h3>
+            <ol class="steps">
+              <li>Підбір, підготовка та переклад необхідних документів відповідно до типу угоди</li>
+              <li>Оформлення довіреності в Чехії або через консульство залежно від вашого місцезнаходження</li>
+              <li>Нотаріальне засвідчення та апостиль за потреби</li>
+              <li>Реєстрація в державних органах Чехії або України</li>
+              <li>Супровід у банку, земельному кадастрі або місцевих службах</li>
+            </ol>
+          </div>
+
+          <aside class="sidebar" id="contact-form">
+            <div class="form-card">
+              <p class="form-card__eyebrow">Безкоштовна консультація</p>
+              <h3>Залишити заявку</h3>
+              <p class="form-card__sub">Опишіть ситуацію — ми зв'яжемось протягом 15 хвилин.</p>
+
+              <form id="quiz-form" method="post" action="form-handler.php">
+                <input type="hidden" name="form_source" value="service-page">
+                <input type="hidden" name="page_source" value="service">
+
+                <div class="form-group">
+                  <label class="form-label" for="quiz-name">Ваше ім'я</label>
+                  <input id="quiz-name" name="name" type="text" class="form-input" placeholder="Ім'я та прізвище" required>
+                </div>
+
+                <div class="form-group">
+                  <label class="form-label" for="quiz-phone">Телефон</label>
+                  <div class="phone-row">
+                    <select class="phone-code" name="country_code" id="country-code">
+                      <option value="+420">🇨🇿 +420</option>
+                      <option value="+380">🇺🇦 +380</option>
+                      <option value="+49">🇩🇪 +49</option>
+                      <option value="+48">🇵🇱 +48</option>
+                    </select>
+                    <input id="quiz-phone" name="phone" type="tel" class="form-input" placeholder="Номер телефону" required>
+                  </div>
+                </div>
+
+                <button type="submit" class="form-submit">Надіслати заявку</button>
+              </form>
+
+              <p class="form-note">Конфіденційно · Без спаму · Безкоштовно</p>
+            </div>
+
+            <div class="trust-badges">
+              <div class="trust-badge">
+                <div class="trust-badge__icon">
+                  <svg viewBox="0 0 24 24"><path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/></svg>
+                </div>
+                <div class="trust-badge__text">
+                  <span class="trust-badge__title">Нотаріальне засвідчення</span>
+                  Офіційні документи з юридичною силою
+                </div>
+              </div>
+              <div class="trust-badge">
+                <div class="trust-badge__icon">
+                  <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm4.24 16L12 15.45 7.77 18l1.12-4.81-3.73-3.23 4.92-.42L12 5l1.92 4.53 4.92.42-3.73 3.23L16.23 18z"/></svg>
+                </div>
+                <div class="trust-badge__text">
+                  <span class="trust-badge__title">Досвід у Чехії</span>
+                  Знаємо місцеве законодавство
+                </div>
+              </div>
+            </div>
+          </aside>
+
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer id="contacts">
+    <div class="container">
+      <div class="footer__inner">
+        <div class="logo">
+          <div class="logo__mark">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+            </svg>
+          </div>
+          <div>
+            <span class="logo__title">НОТАРІУС</span>
+            <span class="logo__sub">© 2026 Юридичні послуги у Чехії</span>
+          </div>
+        </div>
+        <ul class="footer__links">
+          <li><a href="/">Головна</a></li>
+          <li><a href="/service.html">Послуги</a></li>
+          <li><a href="#about">Про послугу</a></li>
+          <li><a href="#contact-form">Консультація</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
