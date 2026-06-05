@@ -1173,7 +1173,6 @@
     </div>
   </footer>
 
-  <!-- Модальне вікно -->
   <div id="modal-form" class="modal-overlay">
     <div class="modal-content">
       <span class="modal-close">&times;</span>
@@ -1182,18 +1181,19 @@
         <h3>Залишити заявку</h3>
         <p class="form-card__sub">Опишіть ситуацію — ми зв'яжемось протягом 15 хвилин.</p>
 
-        <form id="quiz-form" method="post" action="form-handler.php">
-          <input type="hidden" name="form_source" value="service-page">
-          <input type="hidden" name="page_source" value="service">
+        <form class="universal-form" method="post" action="/send-request">
+
+          <input type="hidden" name="form_source" value="modal-window">
+          <input type="hidden" name="page_source" value="{{ request.path }}">
 
           <div class="form-group">
-            <label class="form-label" for="quiz-name">Ваше ім'я</label>
-            <input id="quiz-name" name="name" type="text" class="form-input" placeholder="Ім'я та прізвище" required="">
+            <label class="form-label" for="name">Ваше ім'я</label>
+            <input id="name" name="name" type="text" class="form-input" placeholder="Ім'я та прізвище" required>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="quiz-service">Оберіть послугу</label>
-            <select id="quiz-service" name="service" class="form-input" required>
+            <label class="form-label" for="service">Оберіть послугу</label>
+            <select id="service" name="service" class="form-input" required>
               <option value="" disabled selected>Оберіть варіант...</option>
               <option value="consultation">Юридична консультація</option>
               <option value="documentation">Підготовка документів</option>
@@ -1203,22 +1203,21 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="quiz-message">Ваше запитання</label>
-            <textarea id="quiz-message" name="message" class="form-input" placeholder="Коротко опишіть вашу ситуацію"
+            <label class="form-label" for="message">Ваше запитання</label>
+            <textarea id="message" name="message" class="form-input" placeholder="Коротко опишіть вашу ситуацію"
               rows="3"></textarea>
           </div>
 
           <div class="form-group">
-            <label class="form-label" for="quiz-phone">Телефон</label>
+            <label class="form-label" for="phone">Телефон</label>
             <div class="phone-row">
-              <select class="phone-code" name="country_code" id="country-code">
+              <select class="phone-code" name="country_code">
                 <option value="+420">🇨🇿 +420</option>
                 <option value="+380">🇺🇦 +380</option>
                 <option value="+49">🇩🇪 +49</option>
                 <option value="+48">🇵🇱 +48</option>
               </select>
-              <input id="quiz-phone" name="phone" type="tel" class="form-input" placeholder="Номер телефону"
-                required="">
+              <input id="phone" name="phone" type="tel" class="form-input" placeholder="Номер телефону" required>
             </div>
           </div>
 
@@ -1263,6 +1262,23 @@
 
     window.addEventListener('click', (e) => {
       if (e.target == modal) modal.style.display = 'none';
+    });
+    document.querySelectorAll('.universal-form').forEach(form => {
+      // Вставляем текущий URL в скрытое поле
+      form.querySelector('input[name="page_source"]').value = window.location.pathname;
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const btn = this.querySelector('.form-submit');
+        btn.innerText = 'Відправка...';
+
+        fetch('/send-request', {
+          method: 'POST',
+          body: new FormData(this)
+        }).then(() => {
+          this.innerHTML = '<h3>Дякуємо! Ми зв’яжемось.</h3>';
+        });
+      });
     });
   </script>
 
