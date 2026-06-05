@@ -5,14 +5,11 @@ from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
 
-# Подключение к БД через переменную окружения (настройте в Render)
 DB_URL = os.environ.get("DATABASE_URL")
 
 def get_db_connection():
-    # sslmode='require' обязательно для Render
     return psycopg2.connect(DB_URL, sslmode='require')
 
-# --- МАРШРУТЫ СТРАНИЦ ---
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -25,7 +22,7 @@ def service_page():
 def test_page():
     return render_template('test.html')
 
-# --- ОБРАБОТКА ЗАЯВОК (LEADS) ---
+# --- ЗАЯВКИ ---
 @app.route('/send-request', methods=['POST'])
 def send_request():
     name = request.form.get('name')
@@ -43,40 +40,90 @@ def send_request():
     cur.close()
     conn.close()
 
-    # Уведомление в ТГ
-    text = f"📩 <b>Нова заявка!</b>\nІм'я: {name}\nТелефон: {full_phone}\nПослуга: {service}\nПитання: {message}"
-    requests.post(f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage", 
-                  data={"chat_id": os.environ['TG_CHAT_ID'], "text": text, "parse_mode": "HTML"})
-    
+    text = (f"📩 <b>Нова заявка!</b>\n"
+            f"Ім'я: {name}\n"
+            f"Телефон: {full_phone}\n"
+            f"Послуга: {service}\n"
+            f"Питання: {message}")
+    requests.post(
+        f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
+        data={"chat_id": os.environ['TG_CHAT_ID'], "text": text, "parse_mode": "HTML"}
+    )
     return jsonify({"status": "success"})
 
-# --- СИСТЕМА ОТЗЫВОВ (REVIEWS) ---
+# --- ВІДГУКИ ---
 @app.route('/save-review', methods=['POST'])
 def save_review():
-    name = request.form.get('name')
-    service = request.form.get('service', 'Загальний')
-    review_text = request.form.get('review_text')
-    
+    name = request.form.get('name', '').strip()
+    role = request.form.get('role', '').strip()
+    review_text = request.form.get('review_text', '').strip()
+    rating = request.form.get('rating', 5)
+
+    try:
+        rating = int(rating)
+        if rating < 1 or rating > 5:
+            rating = 5
+    except (ValueError, TypeError):
+        rating = 5
+
+    if not name or not review_text:
+        return jsonify({"status": "error", "message": "Заповніть всі поля"}), 400
+
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("INSERT INTO reviews (name, service, review_text) VALUES (%s, %s, %s)",
-                (name, service, review_text))
+    cur.execute(
+        "INSERT INTO reviews (name, role, text, rating) VALUES (%s, %s, %s, %s)",
+        (name, role, review_text, rating)
+    )
     conn.commit()
     cur.close()
     conn.close()
+
+    # Уведомление в Telegram о новом отзыве
+    stars = '★' * rating + '☆' * (5 - rating)
+    tg_text = (f"💬 <b>Новий відгук!</b>\n"
+               f"👤 {name}"
+               + (f" ({role})" if role else "") +
+               f"\n{stars} ({rating}/5)\n"
+               f"📝 {review_text}")
+    requests.post(
+        f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
+        data={"chat_id": os.environ['TG_CHAT_ID'], "text": tg_text, "parse_mode": "HTML"}
+    )
+
     return jsonify({"status": "success"})
+
 
 @app.route('/get-reviews', methods=['GET'])
 def get_reviews():
     conn = get_db_connection()
     cur = conn.cursor()
-    cur.execute("SELECT name, service, review_text FROM reviews ORDER BY created_at DESC LIMIT 10")
-    reviews = cur.fetchall()
+    # Только одобренные (is_visible = true). Если колонки нет — убери WHERE
+    cur.execute("""
+        SELECT name, role, text, rating, created_at
+        FROM reviews
+        WHERE is_visible = true
+        ORDER BY created_at DESC
+        LIMIT 20
+    """)
+    rows = cur.fetchall()
     cur.close()
     conn.close()
-    return jsonify({"reviews": [{"name": r[0], "service": r[1], "text": r[2]} for r in reviews]})
 
-# --- ТЕЛЕГРАМ БОТ (WEBHOOK) ---
+    reviews = []
+    for r in rows:
+        reviews.append({
+            "name": r[0],
+            "role": r[1] or "",
+            "text": r[2],
+            "rating": r[3] or 5,
+            "created_at": r[4].isoformat() if r[4] else ""
+        })
+
+    return jsonify({"reviews": reviews})
+
+
+# --- TELEGRAM BOT WEBHOOK ---
 @app.route('/webhook', methods=['POST'])
 def webhook():
     data = request.json
@@ -84,7 +131,8 @@ def webhook():
     text = data['message'].get('text', '')
 
     if text == '/start':
-        reply = "Вітаю! Команди:\n/history - заявки\n/reviews - останні 5 відгуків"
+        reply = "Вітаю! Команди:\n/history — останні заявки\n/reviews — останні 5 відгуків"
+
     elif text == '/history':
         conn = get_db_connection()
         cur = conn.cursor()
@@ -92,21 +140,40 @@ def webhook():
         leads = cur.fetchall()
         cur.close()
         conn.close()
-        reply = "Останні 5 заявок:\n" + "\n".join([f"👤 {l[0]} | 📞 {l[1]} | 🛠 {l[2]}" for l in leads]) if leads else "Заявок немає."
+        if leads:
+            reply = "Останні 5 заявок:\n\n" + "\n".join(
+                [f"👤 {l[0]}\n📞 {l[1]}\n🛠 {l[2]}" for l in leads]
+            )
+        else:
+            reply = "Заявок немає."
+
     elif text == '/reviews':
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT name, review_text FROM reviews ORDER BY created_at DESC LIMIT 5")
+        cur.execute("SELECT name, role, text, rating FROM reviews ORDER BY created_at DESC LIMIT 5")
         reviews = cur.fetchall()
         cur.close()
         conn.close()
-        reply = "Останні 5 відгуків:\n\n" + "\n\n".join([f"👤 {r[0]}:\n💬 {r[1]}" for r in reviews]) if reviews else "Відгуків немає."
-    else:
-        reply = "Невідома команда."
+        if reviews:
+            lines = []
+            for r in reviews:
+                stars = '★' * (r[3] or 5) + '☆' * (5 - (r[3] or 5))
+                role_str = f" ({r[1]})" if r[1] else ""
+                lines.append(f"👤 {r[0]}{role_str} {stars}\n💬 {r[2]}")
+            reply = "Останні 5 відгуків:\n\n" + "\n\n".join(lines)
+        else:
+            reply = "Відгуків немає."
 
-    requests.post(f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage", 
-                  data={"chat_id": chat_id, "text": reply})
+    else:
+        reply = "Невідома команда. Введіть /start для списку команд."
+
+    requests.post(
+        f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
+        data={"chat_id": chat_id, "text": reply}
+    )
     return "ok"
+
 
 if __name__ == '__main__':
     app.run()
+    
