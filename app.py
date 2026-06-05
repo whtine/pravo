@@ -29,7 +29,7 @@ def init_db():
             id         SERIAL PRIMARY KEY,
             name       VARCHAR(100) NOT NULL,
             role       VARCHAR(150),
-            text       TEXT NOT NULL,
+            review_text TEXT NOT NULL,
             rating     SMALLINT DEFAULT 5,
             created_at TIMESTAMP DEFAULT NOW()
         );
@@ -38,7 +38,6 @@ def init_db():
     cur.close()
     conn.close()
 
-# Пингер
 def keep_alive():
     while True:
         time.sleep(14 * 60)
@@ -70,18 +69,18 @@ def test_page():
 # --- ЗАЯВКИ ---
 @app.route('/send-request', methods=['POST'])
 def send_request():
-    name = request.form.get('name', '')
-    phone = request.form.get('phone', '')
+    name         = request.form.get('name', '')
+    phone        = request.form.get('phone', '')
     country_code = request.form.get('country_code', '')
-    full_phone = f"{country_code}{phone}"
-    service = request.form.get('service', '')
-    message = request.form.get('message', '')
+    full_phone   = f"{country_code}{phone}"
+    service      = request.form.get('service', '')
+    message      = request.form.get('message', '')
 
     try:
         conn = get_db_connection()
-        cur = conn.cursor()
+        cur  = conn.cursor()
         cur.execute(
-            "INSERT INTO leads (name, phone, service, message) VALUES (%s, %s, %s, %s)",
+            'INSERT INTO leads (name, phone, service, message) VALUES (%s, %s, %s, %s)',
             (name, full_phone, service, message)
         )
         conn.commit()
@@ -91,14 +90,16 @@ def send_request():
         print(f"DB error: {e}")
 
     try:
-        text = (f"📩 <b>Нова заявка!</b>\n"
-                f"Ім'я: {name}\n"
-                f"Телефон: {full_phone}\n"
-                f"Послуга: {service}\n"
-                f"Питання: {message}")
+        tg_text = (
+            f"📩 <b>Нова заявка!</b>\n"
+            f"Ім'я: {name}\n"
+            f"Телефон: {full_phone}\n"
+            f"Послуга: {service}\n"
+            f"Питання: {message}"
+        )
         requests.post(
             f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
-            data={"chat_id": os.environ['TG_CHAT_ID'], "text": text, "parse_mode": "HTML"},
+            data={"chat_id": os.environ['TG_CHAT_ID'], "text": tg_text, "parse_mode": "HTML"},
             timeout=5
         )
     except Exception as e:
@@ -109,8 +110,8 @@ def send_request():
 # --- ВІДГУКИ ---
 @app.route('/save-review', methods=['POST'])
 def save_review():
-    name = request.form.get('name', '').strip()
-    role = request.form.get('role', '').strip()
+    name        = request.form.get('name', '').strip()
+    role        = request.form.get('role', '').strip()
     review_text = request.form.get('review_text', '').strip()
 
     try:
@@ -125,9 +126,9 @@ def save_review():
 
     try:
         conn = get_db_connection()
-        cur = conn.cursor()
+        cur  = conn.cursor()
         cur.execute(
-            "INSERT INTO reviews (name, role, "text", rating) VALUES (%s, %s, %s, %s)",
+            'INSERT INTO reviews (name, role, review_text, rating) VALUES (%s, %s, %s, %s)',
             (name, role, review_text, rating)
         )
         conn.commit()
@@ -138,11 +139,13 @@ def save_review():
         return jsonify({"status": "error", "message": "Помилка бази даних"}), 500
 
     try:
-        stars = '★' * rating + '☆' * (5 - rating)
-        tg_text = (f"💬 <b>Новий відгук!</b>\n"
-                   f"👤 {name}" + (f" ({role})" if role else "") +
-                   f"\n{stars} ({rating}/5)\n"
-                   f"📝 {review_text}")
+        stars   = '★' * rating + '☆' * (5 - rating)
+        tg_text = (
+            f"💬 <b>Новий відгук!</b>\n"
+            f"👤 {name}" + (f" ({role})" if role else "") +
+            f"\n{stars} ({rating}/5)\n"
+            f"📝 {review_text}"
+        )
         requests.post(
             f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
             data={"chat_id": os.environ['TG_CHAT_ID'], "text": tg_text, "parse_mode": "HTML"},
@@ -158,9 +161,9 @@ def save_review():
 def get_reviews():
     try:
         conn = get_db_connection()
-        cur = conn.cursor()
+        cur  = conn.cursor()
         cur.execute("""
-            SELECT name, role, "text", rating, created_at
+            SELECT name, role, review_text, rating, created_at
             FROM reviews
             ORDER BY created_at DESC
             LIMIT 20
@@ -181,7 +184,8 @@ def get_reviews():
         return jsonify({"reviews": reviews})
 
     except Exception as e:
-        print(f"DB error in get_reviews: {e}")
+        import traceback
+        traceback.print_exc()
         return jsonify({"reviews": [], "error": str(e)}), 500
 
 
@@ -189,17 +193,22 @@ def get_reviews():
 @app.route('/webhook', methods=['POST'])
 def webhook():
     try:
-        data = request.json
+        data    = request.json
         chat_id = data['message']['chat']['id']
-        text = data['message'].get('text', '')
+        text    = data['message'].get('text', '')
 
         if text == '/start':
             reply = "Вітаю! Команди:\n/history — останні заявки\n/reviews — останні 5 відгуків"
 
         elif text == '/history':
             conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute("SELECT name, phone, service FROM leads ORDER BY created_at DESC LIMIT 5")
+            cur  = conn.cursor()
+            cur.execute("""
+                SELECT name, phone, service
+                FROM leads
+                ORDER BY created_at DESC
+                LIMIT 5
+            """)
             leads = cur.fetchall()
             cur.close()
             conn.close()
@@ -212,15 +221,20 @@ def webhook():
 
         elif text == '/reviews':
             conn = get_db_connection()
-            cur = conn.cursor()
-            cur.execute("SELECT name, role, "text", rating FROM reviews ORDER BY created_at DESC LIMIT 5")
+            cur  = conn.cursor()
+            cur.execute("""
+                SELECT name, role, review_text, rating
+                FROM reviews
+                ORDER BY created_at DESC
+                LIMIT 5
+            """)
             revs = cur.fetchall()
             cur.close()
             conn.close()
             if revs:
                 lines = []
                 for r in revs:
-                    stars = '★' * (r[3] or 5) + '☆' * (5 - (r[3] or 5))
+                    stars    = '★' * (r[3] or 5) + '☆' * (5 - (r[3] or 5))
                     role_str = f" ({r[1]})" if r[1] else ""
                     lines.append(f"👤 {r[0]}{role_str} {stars}\n💬 {r[2]}")
                 reply = "Останні 5 відгуків:\n\n" + "\n\n".join(lines)
