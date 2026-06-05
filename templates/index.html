@@ -1121,25 +1121,28 @@
 
 <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
-/* ══════════════════════════════════════════════════
-   BURGER MENU
-══════════════════════════════════════════════════ */
-const burger = document.getElementById('burger');
-const mobileNav = document.getElementById('mobileNav');
+/* ── ОБЪЯВЛЕНИЯ ── */
+const burger      = document.getElementById('burger');
+const mobileNav   = document.getElementById('mobileNav');
+const modalConst  = document.getElementById('modal-const-form');   /* ← ИСПРАВЛЕНИЕ 1 */
+const overlay     = document.getElementById('panelOverlay');
+const reviewPanel = document.getElementById('reviewPanel');
+let selectedRating = 0;
+let reviewSwiper   = null;
+
+/* ── BURGER ── */
 burger.addEventListener('click', () => {
   burger.classList.toggle('open');
   mobileNav.classList.toggle('open');
 });
-document.querySelectorAll('.mobile-link').forEach(link => {
-  link.addEventListener('click', () => {
+document.querySelectorAll('.mobile-link').forEach(l => {
+  l.addEventListener('click', () => {
     burger.classList.remove('open');
     mobileNav.classList.remove('open');
   });
 });
 
-/* ══════════════════════════════════════════════════
-   NOTARY TABS
-══════════════════════════════════════════════════ */
+/* ── NOTARY TABS ── */
 document.querySelectorAll('.tab').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
@@ -1149,13 +1152,10 @@ document.querySelectorAll('.tab').forEach(btn => {
   });
 });
 
-/* ══════════════════════════════════════════════════
-   SERVICE LIST TOGGLE
-══════════════════════════════════════════════════ */
+/* ── SERVICE LIST TOGGLE ── */
 const MAX_ITEMS = 3;
 document.querySelectorAll('.services-card__list-toggle').forEach(btn => {
-  const listId = btn.getAttribute('aria-controls');
-  const list = document.getElementById(listId);
+  const list = document.getElementById(btn.getAttribute('aria-controls'));
   if (!list) return;
   const items = [...list.querySelectorAll('.services-card__list-item')];
   if (items.length <= MAX_ITEMS) { btn.style.display = 'none'; return; }
@@ -1165,17 +1165,14 @@ document.querySelectorAll('.services-card__list-toggle').forEach(btn => {
     e.preventDefault();
     const expanded = btn.getAttribute('aria-expanded') === 'true';
     btn.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-    const hidden = [...list.querySelectorAll('.services-card__list-item')].slice(MAX_ITEMS);
-    hidden.forEach(i => i.classList.toggle('hidden', expanded));
+    items.slice(MAX_ITEMS).forEach(i => i.classList.toggle('hidden', expanded));
     btn.querySelector('.services-card__list-toggle-text').textContent = expanded ? 'Розгорнути' : 'Згорнути';
     const icon = btn.querySelector('.services-card__list-toggle-icon');
     if (icon) icon.style.transform = expanded ? '' : 'rotate(180deg)';
   });
 });
 
-/* ══════════════════════════════════════════════════
-   SERVICES CARD — primary button → scroll to contact
-══════════════════════════════════════════════════ */
+/* ── PRIMARY BUTTON → scroll to contact ── */
 document.querySelectorAll('.services-card__button--primary').forEach(btn => {
   btn.addEventListener('click', e => {
     e.preventDefault();
@@ -1183,23 +1180,17 @@ document.querySelectorAll('.services-card__button--primary').forEach(btn => {
   });
 });
 
-/* ══════════════════════════════════════════════════
-   CONSULTATION MODAL (service list links)
-══════════════════════════════════════════════════ */
+/* ── SERVICE LIST LINK → modal ── */
 document.querySelectorAll('.services-card__list-link').forEach(link => {
   link.addEventListener('click', e => {
     e.preventDefault();
-    // Берём текст услуги из этой кнопки
     const serviceText = link.querySelector('.services-card__list-text')?.textContent?.trim();
-    // Находим select в модальном окне и выбираем нужную опцию (или вставляем как hidden)
     const serviceSelect = document.querySelector('#modalForm select[name="service"]');
     if (serviceSelect && serviceText) {
-      // Ищем совпадение среди опций
       let matched = false;
       [...serviceSelect.options].forEach(opt => {
         if (opt.text === serviceText) { serviceSelect.value = opt.value; matched = true; }
       });
-      // Если точного совпадения нет — добавляем временную опцию
       if (!matched) {
         const opt = new Option(serviceText, serviceText, true, true);
         opt.dataset.temp = '1';
@@ -1210,12 +1201,11 @@ document.querySelectorAll('.services-card__list-link').forEach(link => {
     modalConst.style.display = 'flex';
   });
 });
+
 document.getElementById('modalClose').addEventListener('click', () => { modalConst.style.display = 'none'; });
 window.addEventListener('click', e => { if (e.target === modalConst) modalConst.style.display = 'none'; });
 
-/* ══════════════════════════════════════════════════
-   CONTACT FORM SUBMIT
-══════════════════════════════════════════════════ */
+/* ── CONTACT FORM SUBMIT ── */
 document.querySelectorAll('.contact-form, #modalForm').forEach(form => {
   form.addEventListener('submit', function(e) {
     e.preventDefault();
@@ -1233,12 +1223,7 @@ document.querySelectorAll('.contact-form, #modalForm').forEach(form => {
   });
 });
 
-/* ══════════════════════════════════════════════════
-   REVIEWS — панель відкриття/закриття
-══════════════════════════════════════════════════ */
-const overlay = document.getElementById('panelOverlay');
-const reviewPanel = document.getElementById('reviewPanel');
-
+/* ── REVIEW PANEL OPEN/CLOSE ── */
 function openReviewPanel() {
   overlay.classList.add('visible');
   reviewPanel.classList.add('open');
@@ -1248,10 +1233,9 @@ function openReviewPanel() {
   document.getElementById('rpStatus').textContent = '';
   document.getElementById('rpStatus').className = 'rp-status';
   document.getElementById('rvName').value = '';
-  document.getElementById('rvRole').value = '';
-  document.getElementById('rvText').value = '';
+  document.getElementById('rvText').value = '';   /* ← ИСПРАВЛЕНИЕ 2: убран rvRole */
   selectedRating = 0;
-  document.querySelectorAll('.star-picker .star').forEach(s => s.classList.remove('sel', 'hov'));
+  document.querySelectorAll('.star-picker .star').forEach(s => s.classList.remove('sel','hov'));
   document.getElementById('starHint').textContent = 'Оберіть оцінку';
   setTimeout(() => document.getElementById('rvName').focus(), 100);
 }
@@ -1267,51 +1251,48 @@ document.getElementById('panelClose').addEventListener('click', closeReviewPanel
 overlay.addEventListener('click', closeReviewPanel);
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeReviewPanel(); });
 
-/* ══════════════════════════════════════════════════
-   STAR PICKER
-══════════════════════════════════════════════════ */
-let selectedRating = 0;
-const hints = ['', 'Погано', 'Задовільно', 'Нормально', 'Добре', 'Відмінно!'];
-const stars = document.querySelectorAll('.star-picker .star');
+/* ── STAR PICKER ── */
+const hints = ['','Погано','Задовільно','Нормально','Добре','Відмінно!'];
 const starHint = document.getElementById('starHint');
-
-stars.forEach(star => {
+document.querySelectorAll('.star-picker .star').forEach(star => {
   const v = parseInt(star.dataset.v);
   star.addEventListener('mouseenter', () => {
-    stars.forEach(s => s.classList.toggle('hov', parseInt(s.dataset.v) <= v));
+    document.querySelectorAll('.star-picker .star').forEach(s => s.classList.toggle('hov', parseInt(s.dataset.v) <= v));
     starHint.textContent = hints[v];
   });
   star.addEventListener('mouseleave', () => {
-    stars.forEach(s => s.classList.remove('hov'));
+    document.querySelectorAll('.star-picker .star').forEach(s => s.classList.remove('hov'));
     starHint.textContent = selectedRating ? hints[selectedRating] : 'Оберіть оцінку';
   });
   star.addEventListener('click', () => {
     selectedRating = v;
-    stars.forEach(s => s.classList.toggle('sel', parseInt(s.dataset.v) <= selectedRating));
+    document.querySelectorAll('.star-picker .star').forEach(s => s.classList.toggle('sel', parseInt(s.dataset.v) <= selectedRating));
     starHint.textContent = hints[selectedRating];
   });
 });
 
-/* ══════════════════════════════════════════════════
-   REVIEWS — SWIPER instance holder
-══════════════════════════════════════════════════ */
-let reviewSwiper = null;
-
-/* ══════════════════════════════════════════════════
-   BUILD SWIPER HTML from reviews array
-══════════════════════════════════════════════════ */
+/* ── HELPERS ── */
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
 function starsHtml(n) {
-  return [1,2,3,4,5].map(i => `<span class="s${i<=n?' on':''}">${'★'}</span>`).join('');
+  return [1,2,3,4,5].map(i => `<span class="s${i<=n?' on':''}">\u2605</span>`).join('');
+}
+function updateAvgRating(reviews) {
+  if (!reviews.length) return;
+  const avg = reviews.reduce((s,r) => s + (r.rating||5), 0) / reviews.length;
+  document.getElementById('avgRating').textContent = avg.toFixed(1);
 }
 
+/* ── BUILD SLIDES ── */
 function buildSlides(reviews) {
   return reviews.map(r => {
     const initials = (r.name||'??').trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
-    const rating = r.rating || 5;
-    const date = r.created_at
-      ? new Date(r.created_at).toLocaleDateString('uk-UA', {day:'2-digit',month:'long',year:'numeric'})
-      : (r.created ? new Date(r.created).toLocaleDateString('uk-UA', {day:'2-digit',month:'long',year:'numeric'}) : '');
-    const role = r.role || r.position || '';
+    const rating   = r.rating || 5;
+    const role     = r.role || r.position || '';
+    const date     = r.created_at
+      ? new Date(r.created_at).toLocaleDateString('uk-UA',{day:'2-digit',month:'long',year:'numeric'})
+      : '';
     return `<div class="swiper-slide">
       <div class="rv-card">
         <div class="rv-card__bg-quote">"</div>
@@ -1330,41 +1311,26 @@ function buildSlides(reviews) {
   }).join('');
 }
 
-function escapeHtml(str) {
-  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-/* ══════════════════════════════════════════════════
-   UPDATE AVERAGE RATING
-══════════════════════════════════════════════════ */
-function updateAvgRating(reviews) {
-  if (!reviews.length) return;
-  const avg = reviews.reduce((s,r) => s + (r.rating||5), 0) / reviews.length;
-  document.getElementById('avgRating').textContent = avg.toFixed(1);
-}
-
-/* ══════════════════════════════════════════════════
-   RENDER CAROUSEL
-══════════════════════════════════════════════════ */
+/* ── RENDER CAROUSEL ── */
 function renderReviews(reviews) {
-  const wrapper = document.getElementById('reviewsWrapper');
+  const loading  = document.getElementById('rvLoading');
   const swiperEl = document.getElementById('reviewsSwiper');
-  const loading = document.getElementById('rvLoading');
-  const empty = document.getElementById('rvEmpty');
-  const navRow = document.getElementById('rvNavRow');
+  const empty    = document.getElementById('rvEmpty');
+  const navRow   = document.getElementById('rvNavRow');
+  const wrapper  = document.getElementById('reviewsWrapper');
 
   loading.style.display = 'none';
 
-  if (!reviews || reviews.length === 0) {
-    empty.style.display = 'block';
+  if (!reviews || !reviews.length) {
+    empty.style.display  = 'block';
     swiperEl.style.display = 'none';
-    navRow.style.display = 'none';
+    navRow.style.display   = 'none';
     return;
   }
 
-  empty.style.display = 'none';
+  empty.style.display    = 'none';
   swiperEl.style.display = 'block';
-  navRow.style.display = 'flex';
+  navRow.style.display   = 'flex';
 
   wrapper.innerHTML = buildSlides(reviews);
   updateAvgRating(reviews);
@@ -1374,7 +1340,7 @@ function renderReviews(reviews) {
   reviewSwiper = new Swiper('#reviewsSwiper', {
     slidesPerView: 1,
     spaceBetween: 24,
-    loop: reviews.length > 3,
+    loop: reviews.length >= 3,   /* ← ИСПРАВЛЕНИЕ 3 */
     autoplay: { delay: 5500, disableOnInteraction: false, pauseOnMouseEnter: true },
     pagination: { el: '#rvPagination', clickable: true },
     navigation: { prevEl: '#rvPrev', nextEl: '#rvNext' },
@@ -1385,26 +1351,19 @@ function renderReviews(reviews) {
   });
 }
 
-/* ══════════════════════════════════════════════════
-   FALLBACK — если БД пустая
-══════════════════════════════════════════════════ */
+/* ── FALLBACK ── */
 const FALLBACK_REVIEWS = [
-  { name: "Олена Коваль", role: "Підприємець", rating: 5,
-    text: "Дуже задоволена співпрацею! Юристи компанії допомогли вирішити складну корпоративну справу швидко та професійно.", created_at: "2025-03-10T00:00:00" },
-  { name: "Михайло Бондар", role: "Директор ТОВ", rating: 5,
-    text: "Звернувся з питанням нерухомості. Все пройшло чудово — жодних ризиків, повний супровід угоди.", created_at: "2025-02-18T00:00:00" },
-  { name: "Наталія Шевченко", role: "Приватна особа", rating: 5,
-    text: "Захист у кримінальній справі був на найвищому рівні. Дуже вдячна команді за результат.", created_at: "2025-01-25T00:00:00" }
+  { name:'Олена Коваль',    role:'Підприємець',    rating:5, text:'Дуже задоволена співпрацею! Юристи компанії допомогли вирішити складну корпоративну справу швидко та професійно.', created_at:'2025-03-10T00:00:00' },
+  { name:'Михайло Бондар',  role:'Директор ТОВ',   rating:5, text:'Звернувся з питанням нерухомості. Все пройшло чудово — жодних ризиків, повний супровід угоди.',                  created_at:'2025-02-18T00:00:00' },
+  { name:'Наталія Шевченко',role:'Приватна особа', rating:5, text:'Захист у кримінальній справі був на найвищому рівні. Дуже вдячна команді за результат.',                         created_at:'2025-01-25T00:00:00' }
 ];
 
-/* ══════════════════════════════════════════════════
-   LOAD REVIEWS
-══════════════════════════════════════════════════ */
+/* ── LOAD REVIEWS FROM DB ── */
 function loadReviews() {
-  document.getElementById('rvLoading').style.display = 'flex';
+  document.getElementById('rvLoading').style.display    = 'flex';
   document.getElementById('reviewsSwiper').style.display = 'none';
-  document.getElementById('rvEmpty').style.display = 'none';
-  document.getElementById('rvNavRow').style.display = 'none';
+  document.getElementById('rvEmpty').style.display       = 'none';
+  document.getElementById('rvNavRow').style.display      = 'none';
 
   fetch('/get-reviews')
     .then(res => { if (!res.ok) throw new Error(); return res.json(); })
@@ -1417,16 +1376,14 @@ function loadReviews() {
 
 document.addEventListener('DOMContentLoaded', loadReviews);
 
-/* ══════════════════════════════════════════════════
-   SUBMIT REVIEW → POST /save-review → reload
-══════════════════════════════════════════════════ */
+/* ── SUBMIT REVIEW ── */
 document.getElementById('submitReviewBtn').addEventListener('click', async () => {
   const name = document.getElementById('rvName').value.trim();
   const text = document.getElementById('rvText').value.trim();
 
-  if (!name) { showStatus('Введіть ваше ім\'я', 'error'); return; }
-  if (!selectedRating) { showStatus('Будь ласка, оберіть оцінку', 'error'); return; }
-  if (text.length < 10) { showStatus('Відгук занадто короткий (мінімум 10 символів)', 'error'); return; }
+  if (!name)              { showStatus('Введіть ваше ім\'я', 'error'); return; }
+  if (!selectedRating)    { showStatus('Будь ласка, оберіть оцінку', 'error'); return; }
+  if (text.length < 10)   { showStatus('Відгук занадто короткий (мінімум 10 символів)', 'error'); return; }
 
   const btn = document.getElementById('submitReviewBtn');
   btn.disabled = true;
@@ -1438,11 +1395,10 @@ document.getElementById('submitReviewBtn').addEventListener('click', async () =>
   body.append('rating', selectedRating);
 
   try {
-    const res = await fetch('/save-review', { method: 'POST', body });
+    const res  = await fetch('/save-review', { method:'POST', body });
     const data = await res.json();
-
     if (res.ok && data.status === 'success') {
-      document.getElementById('reviewFormState').style.display = 'none';
+      document.getElementById('reviewFormState').style.display  = 'none';
       document.getElementById('reviewThanksState').style.display = 'block';
       setTimeout(() => { closeReviewPanel(); loadReviews(); }, 2000);
     } else {
