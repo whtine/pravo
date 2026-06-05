@@ -1186,9 +1186,29 @@ document.querySelectorAll('.services-card__button--primary').forEach(btn => {
 /* ══════════════════════════════════════════════════
    CONSULTATION MODAL (service list links)
 ══════════════════════════════════════════════════ */
-const modalConst = document.getElementById('modal-const-form');
 document.querySelectorAll('.services-card__list-link').forEach(link => {
-  link.addEventListener('click', e => { e.preventDefault(); modalConst.style.display = 'flex'; });
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    // Берём текст услуги из этой кнопки
+    const serviceText = link.querySelector('.services-card__list-text')?.textContent?.trim();
+    // Находим select в модальном окне и выбираем нужную опцию (или вставляем как hidden)
+    const serviceSelect = document.querySelector('#modalForm select[name="service"]');
+    if (serviceSelect && serviceText) {
+      // Ищем совпадение среди опций
+      let matched = false;
+      [...serviceSelect.options].forEach(opt => {
+        if (opt.text === serviceText) { serviceSelect.value = opt.value; matched = true; }
+      });
+      // Если точного совпадения нет — добавляем временную опцию
+      if (!matched) {
+        const opt = new Option(serviceText, serviceText, true, true);
+        opt.dataset.temp = '1';
+        serviceSelect.add(opt);
+        serviceSelect.value = serviceText;
+      }
+    }
+    modalConst.style.display = 'flex';
+  });
 });
 document.getElementById('modalClose').addEventListener('click', () => { modalConst.style.display = 'none'; });
 window.addEventListener('click', e => { if (e.target === modalConst) modalConst.style.display = 'none'; });
@@ -1366,66 +1386,44 @@ function renderReviews(reviews) {
 }
 
 /* ══════════════════════════════════════════════════
-   ЗАВАНТАЖЕННЯ ВІДГУКІВ З СЕРВЕРА
-   
-   Очікуваний формат відповіді від /get-reviews:
-   {
-     "reviews": [
-       {
-         "id": 1,
-         "name": "Іван Петренко",
-         "role": "Директор компанії",     // необов'язково
-         "text": "Текст відгуку...",       // або "review_text"
-         "rating": 5,
-         "created_at": "2025-01-15T10:30:00Z"  // або "created"
-       },
-       ...
-     ]
-   }
-   
-   SQL для PostgreSQL (рекомендована структура таблиці):
-   CREATE TABLE reviews (
-     id         SERIAL PRIMARY KEY,
-     name       VARCHAR(100) NOT NULL,
-     role       VARCHAR(150),
-     text       TEXT NOT NULL,
-     rating     SMALLINT DEFAULT 5 CHECK (rating BETWEEN 1 AND 5),
-     is_visible BOOLEAN DEFAULT false,  -- модерація
-     created_at TIMESTAMP DEFAULT NOW()
-   );
-   
-   Ендпоінт /get-reviews повинен повертати лише is_visible = true.
-   Ендпоінт /save-review приймає POST з полями: name, role, review_text, rating.
+   FALLBACK — если БД пустая
+══════════════════════════════════════════════════ */
+const FALLBACK_REVIEWS = [
+  { name: "Олена Коваль", role: "Підприємець", rating: 5,
+    text: "Дуже задоволена співпрацею! Юристи компанії допомогли вирішити складну корпоративну справу швидко та професійно.", created_at: "2025-03-10T00:00:00" },
+  { name: "Михайло Бондар", role: "Директор ТОВ", rating: 5,
+    text: "Звернувся з питанням нерухомості. Все пройшло чудово — жодних ризиків, повний супровід угоди.", created_at: "2025-02-18T00:00:00" },
+  { name: "Наталія Шевченко", role: "Приватна особа", rating: 5,
+    text: "Захист у кримінальній справі був на найвищому рівні. Дуже вдячна команді за результат.", created_at: "2025-01-25T00:00:00" }
+];
+
+/* ══════════════════════════════════════════════════
+   LOAD REVIEWS
 ══════════════════════════════════════════════════ */
 function loadReviews() {
+  document.getElementById('rvLoading').style.display = 'flex';
+  document.getElementById('reviewsSwiper').style.display = 'none';
+  document.getElementById('rvEmpty').style.display = 'none';
+  document.getElementById('rvNavRow').style.display = 'none';
+
   fetch('/get-reviews')
-    .then(res => {
-      if (!res.ok) throw new Error('HTTP ' + res.status);
-      return res.json();
-    })
+    .then(res => { if (!res.ok) throw new Error(); return res.json(); })
     .then(data => {
-      const reviews = data.reviews || data || [];
+      const reviews = Array.isArray(data) ? data : (data.reviews || []);
       renderReviews(reviews.length ? reviews : FALLBACK_REVIEWS);
     })
-    .catch(() => {
-      // Якщо бекенд недоступний — показуємо fallback
-      renderReviews(FALLBACK_REVIEWS);
-    });
+    .catch(() => renderReviews(FALLBACK_REVIEWS));
 }
 
-// Ініціалізація
 document.addEventListener('DOMContentLoaded', loadReviews);
 
 /* ══════════════════════════════════════════════════
-   ЗБЕРЕЖЕННЯ ВІДГУКУ
+   SUBMIT REVIEW → POST /save-review → reload
 ══════════════════════════════════════════════════ */
 document.getElementById('submitReviewBtn').addEventListener('click', async () => {
   const name = document.getElementById('rvName').value.trim();
-  const role = document.getElementById('rvRole').value.trim();
   const text = document.getElementById('rvText').value.trim();
-  const status = document.getElementById('rpStatus');
 
-  // Валідація
   if (!name) { showStatus('Введіть ваше ім\'я', 'error'); return; }
   if (!selectedRating) { showStatus('Будь ласка, оберіть оцінку', 'error'); return; }
   if (text.length < 10) { showStatus('Відгук занадто короткий (мінімум 10 символів)', 'error'); return; }
@@ -1434,28 +1432,24 @@ document.getElementById('submitReviewBtn').addEventListener('click', async () =>
   btn.disabled = true;
   btn.textContent = 'Надсилаємо...';
 
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('role', role);
-  formData.append('review_text', text);   // поле "review_text" або "text" — узгодьте з бекендом
-  formData.append('rating', selectedRating);
+  const body = new FormData();
+  body.append('name', name);
+  body.append('review_text', text);
+  body.append('rating', selectedRating);
 
   try {
-    const res = await fetch('/save-review', { method: 'POST', body: formData });
+    const res = await fetch('/save-review', { method: 'POST', body });
     const data = await res.json();
 
-    if (res.ok || data.status === 'success' || data.ok) {
+    if (res.ok && data.status === 'success') {
       document.getElementById('reviewFormState').style.display = 'none';
       document.getElementById('reviewThanksState').style.display = 'block';
-      // Перезавантажуємо відгуки через 2 секунди
-      setTimeout(loadReviews, 2000);
+      setTimeout(() => { closeReviewPanel(); loadReviews(); }, 2000);
     } else {
-      showStatus(data.message || 'Помилка при збереженні. Спробуйте ще раз.', 'error');
+      showStatus(data.message || 'Помилка. Спробуйте ще раз.', 'error');
     }
   } catch {
-    // Якщо бекенд не налаштований — все одно показуємо дяку
-    document.getElementById('reviewFormState').style.display = 'none';
-    document.getElementById('reviewThanksState').style.display = 'block';
+    showStatus('Помилка з\'єднання. Спробуйте ще раз.', 'error');
   } finally {
     btn.disabled = false;
     btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Опублікувати відгук';
