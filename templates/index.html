@@ -1322,7 +1322,7 @@ function renderReviews(reviews) {
   loading.style.display = 'none';
 
   if (!reviews || !reviews.length) {
-    empty.style.display  = 'block';
+    empty.style.display    = 'block';
     swiperEl.style.display = 'none';
     navRow.style.display   = 'none';
     return;
@@ -1337,13 +1337,20 @@ function renderReviews(reviews) {
 
   if (reviewSwiper) { reviewSwiper.destroy(true, true); reviewSwiper = null; }
 
+  /* Считаем сколько слайдов видно на текущем экране */
+  const screenW     = window.innerWidth;
+  const perView     = screenW >= 1024 ? 3 : screenW >= 640 ? 2 : 1;
+  const canLoop     = reviews.length >= perView * 2;   /* loop требует минимум perView*2 слайдов */
+
   reviewSwiper = new Swiper('#reviewsSwiper', {
     slidesPerView: 1,
-    spaceBetween: 24,
-    loop: reviews.length >= 3,   /* ← ИСПРАВЛЕНИЕ 3 */
-    autoplay: { delay: 5500, disableOnInteraction: false, pauseOnMouseEnter: true },
-    pagination: { el: '#rvPagination', clickable: true },
-    navigation: { prevEl: '#rvPrev', nextEl: '#rvNext' },
+    spaceBetween:  24,
+    loop:          canLoop,
+    autoplay:      canLoop
+      ? { delay: 5500, disableOnInteraction: false, pauseOnMouseEnter: true }
+      : false,
+    pagination:    { el: '#rvPagination', clickable: true },
+    navigation:    { prevEl: '#rvPrev', nextEl: '#rvNext' },
     breakpoints: {
       640:  { slidesPerView: 2 },
       1024: { slidesPerView: 3 }
