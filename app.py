@@ -70,11 +70,11 @@ def index():
     return render_template('index.html')
 
 @app.route('/service')
-def index():
+def service_page():  
     return render_template('service.html')
 
 @app.route('/test')
-def index():
+def test_page():   
     return render_template('test.html')
 
 if __name__ == '__main__':
