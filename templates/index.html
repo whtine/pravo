@@ -2886,41 +2886,81 @@
   </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <style>
+    .mySwiper {
+      padding: 1rem 0 2rem;
+    }
+    .mySwiper .swiper-slide {
+      padding: 1.5rem;
+      background: #fff;
+      border: 1px solid rgba(74,46,18,0.12);
+      border-radius: 16px;
+      box-shadow: 0 4px 16px rgba(74,46,18,0.07);
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .mySwiper .swiper-slide h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      color: var(--brown);
+    }
+    .mySwiper .swiper-slide p {
+      font-size: 14px;
+      line-height: 1.75;
+      color: var(--brown-light);
+    }
+    .mySwiper .swiper-slide small {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+    }
+  </style>
 
-  <div class="swiper mySwiper">
-    <div class="swiper-wrapper" id="reviewsCarousel">
-    </div>
+  <div class="swiper mySwiper" id="reviewsSwiper" style="display:none; max-width:1280px; margin:0 auto; padding:0 4rem;">
+    <div class="swiper-wrapper" id="reviewsCarousel"></div>
+    <div class="swiper-pagination"></div>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
-    fetch('/get-reviews')
-      .then(res => res.json())
-      .then(data => {
-        let container = document.getElementById('reviewsCarousel');
+    (function () {
+      const key = 'reviewsJsonDB';
+      let stored = [];
+      try { stored = JSON.parse(localStorage.getItem(key)) || []; } catch {}
 
-        // Генерируем HTML для всех отзывов
-        let html = "";
-        data.reviews.forEach(r => {
-          html += `
-                    <div class="swiper-slide" style="padding:20px; border:1px solid #ccc; border-radius:10px;">
-                        <h4>${r.name}</h4>
-                        <small>${r.service}</small>
-                        <p>${r.text}</p>
-                    </div>`;
-        });
+      if (stored.length === 0) return;
 
-        // Вставляем все сразу
-        container.innerHTML = html;
+      const container = document.getElementById('reviewsCarousel');
+      const swiperEl = document.getElementById('reviewsSwiper');
 
-        // ИНИЦИАЛИЗАЦИЯ ПОСЛЕ ВСТАВКИ
-        new Swiper(".mySwiper", {
-          slidesPerView: 3,
-          spaceBetween: 20,
-          loop: true, // Полезно для карусели
-          autoplay: { delay: 3000 }
-        });
+      let html = '';
+      stored.forEach(r => {
+        const date = r.created ? new Date(r.created).toLocaleDateString('uk-UA', { day:'2-digit', month:'long', year:'numeric' }) : '';
+        html += `<div class="swiper-slide">
+          <h4>${r.name}</h4>
+          ${r.role ? `<small>${r.role}</small>` : ''}
+          <p>${r.text}</p>
+          ${date ? `<span style="font-size:12px;color:#aaa;margin-top:auto;">${date}</span>` : ''}
+        </div>`;
       });
+
+      container.innerHTML = html;
+      swiperEl.style.display = '';
+
+      window._reviewSwiper = new Swiper('.mySwiper', {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: stored.length > 2,
+        autoplay: { delay: 4000, disableOnInteraction: false },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        breakpoints: {
+          640: { slidesPerView: 2 },
+          1024: { slidesPerView: 3 }
+        }
+      });
+    })();
   </script>
 
   <!-- REVIEW -->
@@ -3042,12 +3082,9 @@
       <button class="btn-primary" type="button" id="panelContact">Зв'язатися з нами</button>
     </div>
   </div>
-  <div class="review-panel" id="reviewPanel"
-    style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
-    <div class="review-panel-inner"
-      style="background:white; padding:30px; border-radius:10px; max-width:500px; width:90%; position:relative;">
-      <button class="panel-close" onclick="document.getElementById('reviewPanel').style.display='none'"
-        style="position:absolute; top:10px; right:10px;">×</button>
+  <div class="review-panel" id="reviewPanel" aria-hidden="true">
+    <div class="review-panel-inner">
+      <button class="panel-close" aria-label="Закрити">×</button>
 
       <div id="reviewContent">
         <h3 class="panel-title">Додати відгук</h3>
@@ -3135,31 +3172,7 @@
 
   <script>
 
-    document.getElementById('reviewPanel').addEventListener('click', function (e) {
-      if (e.target === this) {
-        this.style.display = 'none';
-      }
-    });
 
-    document.getElementById('saveReviewButton').addEventListener('click', function () {
-      let name = document.getElementById('reviewName').value;
-      let text = document.getElementById('reviewText').value;
-
-      let formData = new FormData();
-      formData.append('name', name);
-      formData.append('review_text', text);
-
-      fetch('/save-review', {
-        method: 'POST',
-        body: formData
-      }).then(res => {
-        if (res.ok) {
-          // Заменяем содержимое модалки на "Дякуємо"
-          document.getElementById('reviewContent').innerHTML =
-            "<h3 style='color:green;'>Дякуємо велике!</h3><p>Ваш відгук успішно додано.</p>";
-        }
-      });
-    });
 
     document.querySelectorAll('.contact-form').forEach(form => {
       form.addEventListener('submit', function (e) {
@@ -3186,7 +3199,6 @@
     const panelCloseButtons = document.querySelectorAll('.panel-close');
     const saveReviewButton = document.getElementById('saveReviewButton');
     const reviewName = document.getElementById('reviewName');
-    const reviewRole = document.getElementById('reviewRole');
     const reviewText = document.getElementById('reviewText');
     const reviewStatus = document.getElementById('reviewStatus');
 
@@ -3241,23 +3253,54 @@
       reviewPanel.setAttribute('aria-hidden', 'true');
     };
 
+    const refreshReviewsCarousel = (reviews) => {
+      const container = document.getElementById('reviewsCarousel');
+      const swiperEl = document.getElementById('reviewsSwiper');
+      if (!container || !swiperEl) return;
+
+      let html = '';
+      reviews.forEach(r => {
+        const date = r.created ? new Date(r.created).toLocaleDateString('uk-UA', { day:'2-digit', month:'long', year:'numeric' }) : '';
+        html += `<div class="swiper-slide">
+          <h4>${r.name}</h4>
+          <p>${r.text}</p>
+          ${date ? `<span style="font-size:12px;color:#aaa;margin-top:auto;">${date}</span>` : ''}
+        </div>`;
+      });
+      container.innerHTML = html;
+      swiperEl.style.display = '';
+
+      // Re-init Swiper if already exists
+      if (window._reviewSwiper) { window._reviewSwiper.destroy(true, true); }
+      window._reviewSwiper = new Swiper('.mySwiper', {
+        slidesPerView: 1,
+        spaceBetween: 20,
+        loop: reviews.length > 2,
+        autoplay: { delay: 4000, disableOnInteraction: false },
+        pagination: { el: '.swiper-pagination', clickable: true },
+        breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
+      });
+    };
+
     const submitReview = () => {
       const name = reviewName.value.trim();
-      const role = reviewRole.value.trim();
       const text = reviewText.value.trim();
 
       if (!name || !text) {
-        reviewStatus.textContent = 'Будь ласка, заповніть ім’я та текст відгуку.';
+        reviewStatus.textContent = "Будь ласка, заповніть ім'я та текст відгуку.";
+        reviewStatus.style.color = '#c0392b';
         return;
       }
 
       const reviews = loadReviews();
-      reviews.push({ name, role, text, created: new Date().toISOString() });
+      reviews.push({ name, text, created: new Date().toISOString() });
       saveReviews(reviews);
-      reviewStatus.textContent = `Збережено! У базі ${reviews.length} відгуків.`;
+      reviewStatus.textContent = `Дякуємо! Ваш відгук збережено. Всього відгуків: ${reviews.length}.`;
+      reviewStatus.style.color = 'var(--green)';
       reviewName.value = '';
-      reviewRole.value = '';
       reviewText.value = '';
+
+      refreshReviewsCarousel(reviews);
     };
 
     triggers.forEach(trigger => {
