@@ -2886,75 +2886,352 @@
   </script>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+  <!-- REVIEW -->
+  <section class="review" id="review">
+    <div class="container">
+      <div class="review-section-header">
+        <div>
+          <div class="section-label">Відгуки клієнтів</div>
+          <h2 class="section-title">Найважливіше — ваш <em>досвід</em></h2>
+          <p class="review-desc">Реальні історії людей, яким ми допомогли захистити їхні права та інтереси.</p>
+        </div>
+        <div class="review-header-right">
+          <div class="review-rating-badge">
+            <div class="review-stars">★★★★★</div>
+            <div class="review-rating-num">5.0</div>
+            <div class="review-rating-label">середня оцінка</div>
+          </div>
+          <button class="btn-primary" type="button" id="openReviewForm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+            Додати відгук
+          </button>
+        </div>
+      </div>
+
+      <div class="reviews-carousel-wrap">
+        <button class="review-nav review-nav--prev" id="reviewPrev" aria-label="Попередній">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+        </button>
+        <div class="swiper mySwiper" id="reviewsSwiper">
+          <div class="swiper-wrapper" id="reviewsCarousel">
+            <div class="swiper-slide review-slide">
+              <div class="review-slide-quote">"</div>
+              <div class="review-slide-stars-top"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+              <p class="review-slide-text">Команда Василенко та Партнери вирішила наш корпоративний спір за два місяці. Чіткий підхід, жодних зайвих слів — лише результат.</p>
+              <div class="review-slide-footer">
+                <div class="review-slide-avatar">ОМ</div>
+                <div>
+                  <div class="review-slide-name">Олексій Марченко</div>
+                  <div class="review-slide-role">Директор ТОВ «Марченко Груп»</div>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide review-slide">
+              <div class="review-slide-quote">"</div>
+              <div class="review-slide-stars-top"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+              <p class="review-slide-text">Зверталась із питанням нерухомості — угода пройшла без єдиної проблеми. Адвокат пояснив усі нюанси зрозумілою мовою.</p>
+              <div class="review-slide-footer">
+                <div class="review-slide-avatar">НК</div>
+                <div>
+                  <div class="review-slide-name">Наталія Коваленко</div>
+                  <div class="review-slide-role">Приватна особа</div>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide review-slide">
+              <div class="review-slide-quote">"</div>
+              <div class="review-slide-stars-top"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+              <p class="review-slide-text">Захист у кримінальній справі — найстресовіший момент у моєму житті. Адвокати були поруч на кожному етапі. Справу закрито.</p>
+              <div class="review-slide-footer">
+                <div class="review-slide-avatar">ВС</div>
+                <div>
+                  <div class="review-slide-name">Василь Семененко</div>
+                  <div class="review-slide-role">Клієнт компанії</div>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide review-slide">
+              <div class="review-slide-quote">"</div>
+              <div class="review-slide-stars-top"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+              <p class="review-slide-text">Реєстрація торгової марки зайняла значно менше часу, ніж я очікувала. Фахова команда, яка знає свою справу на відмінно.</p>
+              <div class="review-slide-footer">
+                <div class="review-slide-avatar">ІП</div>
+                <div>
+                  <div class="review-slide-name">Ірина Петрик</div>
+                  <div class="review-slide-role">Засновниця бренду</div>
+                </div>
+              </div>
+            </div>
+            <div class="swiper-slide review-slide">
+              <div class="review-slide-quote">"</div>
+              <div class="review-slide-stars-top"><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span><span class="s on">★</span></div>
+              <p class="review-slide-text">Трудовий спір з роботодавцем розтягнувся б на роки без допомоги фахівців. Завдяки юристам компанії питання вирішили за три тижні.</p>
+              <div class="review-slide-footer">
+                <div class="review-slide-avatar">ДБ</div>
+                <div>
+                  <div class="review-slide-name">Дмитро Білик</div>
+                  <div class="review-slide-role">Менеджер</div>
+                </div>
+              </div>
+            </div>
+                    </div>
+          <div class="swiper-pagination review-pagination" id="reviewPagination"></div>
+        </div>
+        <button class="review-nav review-nav--next" id="reviewNext" aria-label="Наступний">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <style>
-    .mySwiper {
-      padding: 1rem 0 2rem;
+    /* ── REVIEW SECTION ── */
+    .review {
+      background: linear-gradient(180deg, #fdf6ee 0%, #f5e6d3 100%);
+      overflow: hidden;
+      position: relative;
     }
-    .mySwiper .swiper-slide {
-      padding: 1.5rem;
-      background: #fff;
-      border: 1px solid rgba(74,46,18,0.12);
-      border-radius: 16px;
-      box-shadow: 0 4px 16px rgba(74,46,18,0.07);
+    .review::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--brown), var(--gold), var(--brown));
+    }
+
+    /* Header */
+    .review-section-header {
       display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+      flex-wrap: wrap;
     }
-    .mySwiper .swiper-slide h4 {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 18px;
+    .review-header-right {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      flex-shrink: 0;
+    }
+    .review-rating-badge {
+      text-align: center;
+      padding: 1.1rem 1.6rem;
+      background: var(--brown);
+      border-radius: 20px;
+      box-shadow: 0 8px 24px rgba(74,46,18,0.18);
+    }
+    .review-stars { font-size: 17px; color: var(--gold); letter-spacing: 2px; line-height: 1; margin-bottom: 5px; }
+    .review-rating-num { font-family: 'Cormorant Garamond', serif; font-size: 34px; font-weight: 700; color: var(--cream); line-height: 1; }
+    .review-rating-label { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(245,230,211,0.55); margin-top: 3px; }
+
+    /* Carousel */
+    .reviews-carousel-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .review-nav {
+      flex-shrink: 0;
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      border: 1.5px solid rgba(74,46,18,0.15);
+      background: #fff;
       color: var(--brown);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      box-shadow: 0 2px 12px rgba(74,46,18,0.08);
+      z-index: 2;
     }
-    .mySwiper .swiper-slide p {
-      font-size: 14px;
-      line-height: 1.75;
-      color: var(--brown-light);
+    .review-nav:hover { background: var(--gold); border-color: var(--gold); color: #fff; transform: scale(1.1); box-shadow: 0 6px 20px rgba(205,127,50,0.35); }
+    .mySwiper { flex: 1; overflow: hidden; padding-bottom: 3.5rem !important; }
+
+    /* Slide card */
+    .review-slide {
+      background: #fff;
+      border-radius: 28px;
+      padding: 2.25rem 2.25rem 2rem;
+      box-shadow: 0 4px 24px rgba(74,46,18,0.07), 0 1px 4px rgba(74,46,18,0.04);
+      display: flex !important;
+      flex-direction: column;
+      gap: 1.1rem;
+      height: auto !important;
+      transition: box-shadow 0.3s ease, transform 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      box-sizing: border-box;
     }
-    .mySwiper .swiper-slide small {
-      font-size: 11px;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
+    .review-slide::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+    }
+    .review-slide:hover { box-shadow: 0 20px 56px rgba(74,46,18,0.14), 0 4px 12px rgba(74,46,18,0.06); transform: translateY(-6px); }
+    .review-slide:hover::after { transform: scaleX(1); }
+
+    .review-slide-quote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 80px;
+      line-height: 0.55;
       color: var(--gold);
+      opacity: 0.22;
+      user-select: none;
+      position: absolute;
+      top: 1.5rem; right: 1.75rem;
+    }
+    .review-slide-stars-top {
+      display: flex;
+      gap: 3px;
+    }
+    .review-slide-stars-top .s {
+      font-size: 15px;
+      color: #ddd;
+      transition: color 0.1s;
+    }
+    .review-slide-stars-top .s.on { color: var(--gold); }
+
+    .review-slide-text {
+      font-size: 15px;
+      line-height: 1.85;
+      color: #5a3e28;
+      flex: 1;
+    }
+    .review-slide-footer {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding-top: 1.1rem;
+      border-top: 1px solid rgba(74,46,18,0.07);
+    }
+    .review-slide-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brown) 60%, var(--brown-light));
+      color: var(--gold);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 15px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(74,46,18,0.18);
+    }
+    .review-slide-name { font-family: 'Cormorant Garamond', serif; font-size: 17px; font-weight: 600; color: var(--brown); line-height: 1.2; }
+    .review-slide-role { font-size: 12px; color: rgba(74,46,18,0.42); margin-top: 2px; }
+    .review-slide-date { font-size: 11px; color: rgba(74,46,18,0.32); margin-top: 1px; }
+
+    /* Pagination */
+    .review-pagination { bottom: 0 !important; }
+    .review-pagination .swiper-pagination-bullet { background: rgba(74,46,18,0.18); opacity: 1; width: 8px; height: 8px; border-radius: 4px; transition: background 0.2s, width 0.25s; }
+    .review-pagination .swiper-pagination-bullet-active { background: var(--gold); width: 28px; }
+
+    /* ── REVIEW PANEL FORM ── */
+    .rp-inner {
+      max-width: 520px !important;
+      padding: 2.5rem !important;
+    }
+    .rp-header { margin-bottom: 1.75rem; }
+    .rp-badge { font-size: 11px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--gold); margin-bottom: 0.6rem; }
+    .rp-title { font-family: 'Cormorant Garamond', serif; font-size: 32px; font-weight: 600; color: var(--brown); line-height: 1.1; margin-bottom: 0.5rem; }
+    .rp-title em { font-style: italic; color: var(--gold); }
+    .rp-sub { font-size: 14px; color: var(--brown-light); line-height: 1.6; }
+
+    /* Star picker */
+    .rp-stars-row { display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding: 1rem 1.25rem; background: var(--cream-light); border-radius: 16px; border: 1px solid rgba(74,46,18,0.08); }
+    .rp-stars-label { font-size: 13px; color: var(--brown-light); white-space: nowrap; }
+    .star-picker { display: flex; gap: 6px; }
+    .star-picker .star { font-size: 32px; color: #ddd; cursor: pointer; transition: color 0.12s, transform 0.12s; line-height: 1; user-select: none; }
+    .star-picker .star:hover,
+    .star-picker .star.hov,
+    .star-picker .star.sel { color: var(--gold); transform: scale(1.15); }
+    .rp-stars-hint { font-size: 12px; color: rgba(74,46,18,0.45); white-space: nowrap; }
+
+    /* Form fields */
+    .rp-form { display: flex; flex-direction: column; gap: 1rem; }
+    .rp-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .rp-label { font-size: 13px; font-weight: 500; color: var(--brown); letter-spacing: 0.04em; }
+    .rp-input, .rp-textarea {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      border: 1.5px solid rgba(74,46,18,0.14);
+      border-radius: 14px;
+      font-family: 'Jost', sans-serif;
+      font-size: 15px;
+      color: var(--text-dark);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .rp-input:focus, .rp-textarea:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(205,127,50,0.12); }
+    .rp-textarea { resize: vertical; min-height: 110px; }
+    .rp-submit {
+      display: inline-flex; align-items: center; justify-content: center; gap: 0.6rem;
+      background: var(--gold); color: #fff;
+      padding: 1rem 2rem;
+      border: none; border-radius: 14px;
+      font-family: 'Jost', sans-serif; font-size: 14px; font-weight: 600; letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 16px rgba(205,127,50,0.3);
+    }
+    .rp-submit:hover { background: #b57524; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(205,127,50,0.38); }
+
+    @media (max-width: 768px) {
+      .review-section-header { flex-direction: column; align-items: flex-start; }
+      .review-header-right { width: 100%; justify-content: space-between; }
+      .review-nav { display: none; }
+      .reviews-carousel-wrap { display: block; }
+      .mySwiper { padding-bottom: 2.5rem !important; }
+      .rp-inner { padding: 1.75rem !important; }
     }
   </style>
 
-  <div class="swiper mySwiper" id="reviewsSwiper" style="display:none; max-width:1280px; margin:0 auto; padding:0 4rem;">
-    <div class="swiper-wrapper" id="reviewsCarousel"></div>
-    <div class="swiper-pagination"></div>
-  </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     (function () {
       const key = 'reviewsJsonDB';
       let stored = [];
       try { stored = JSON.parse(localStorage.getItem(key)) || []; } catch {}
 
-      if (stored.length === 0) return;
+      if (stored.length > 0) {
+        const container = document.getElementById('reviewsCarousel');
+        const starsHtml = (n) => [1,2,3,4,5].map(i => `<span class="s${i<=n?' on':''}">★</span>`).join('');
+        let html = '';
+        stored.forEach(r => {
+          const date = r.created ? new Date(r.created).toLocaleDateString('uk-UA', { day:'2-digit', month:'long', year:'numeric' }) : '';
+          const initials = r.name.trim().split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
+          const rating = r.rating || 5;
+          html += `<div class="swiper-slide review-slide">
+            <div class="review-slide-quote">"</div>
+            <div class="review-slide-stars-top">${starsHtml(rating)}</div>
+            <p class="review-slide-text">${r.text}</p>
+            <div class="review-slide-footer">
+              <div class="review-slide-avatar">${initials}</div>
+              <div>
+                <div class="review-slide-name">${r.name}</div>
+                ${date ? `<div class="review-slide-date">${date}</div>` : ''}
+              </div>
+            </div>
+          </div>`;
+        });
+        container.innerHTML = html;
+      }
 
-      const container = document.getElementById('reviewsCarousel');
-      const swiperEl = document.getElementById('reviewsSwiper');
-
-      let html = '';
-      stored.forEach(r => {
-        const date = r.created ? new Date(r.created).toLocaleDateString('uk-UA', { day:'2-digit', month:'long', year:'numeric' }) : '';
-        html += `<div class="swiper-slide">
-          <h4>${r.name}</h4>
-          ${r.role ? `<small>${r.role}</small>` : ''}
-          <p>${r.text}</p>
-          ${date ? `<span style="font-size:12px;color:#aaa;margin-top:auto;">${date}</span>` : ''}
-        </div>`;
-      });
-
-      container.innerHTML = html;
-      swiperEl.style.display = '';
-
-      window._reviewSwiper = new Swiper('.mySwiper', {
+      window._reviewSwiper = new Swiper('#reviewsSwiper', {
         slidesPerView: 1,
-        spaceBetween: 20,
-        loop: stored.length > 2,
-        autoplay: { delay: 4000, disableOnInteraction: false },
-        pagination: { el: '.swiper-pagination', clickable: true },
+        spaceBetween: 24,
+        loop: true,
+        autoplay: { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true },
+        pagination: { el: '#reviewPagination', clickable: true },
+        navigation: { prevEl: '#reviewPrev', nextEl: '#reviewNext' },
         breakpoints: {
           640: { slidesPerView: 2 },
           1024: { slidesPerView: 3 }
@@ -2962,20 +3239,6 @@
       });
     })();
   </script>
-
-  <!-- REVIEW -->
-  <section class="review" id="review">
-    <div class="container">
-      <div class="review-card">
-        <span class="review-label">Відгуки</span>
-        <h2 class="review-title">Найважливіше — ваш <em>досвід</em></h2>
-        <p class="review-desc">
-          Залиште свій відгук нижче: лише ім’я і текст, щоб інші бачили реальні історії клієнтів.
-        </p>
-        <button class="btn-primary review-open" type="button" id="openReviewForm">Додати відгук</button>
-      </div>
-    </div>
-  </section>
 
   <!-- CONTACT -->
   <section class="contact" id="contact">
@@ -3083,22 +3346,39 @@
     </div>
   </div>
   <div class="review-panel" id="reviewPanel" aria-hidden="true">
-    <div class="review-panel-inner">
+    <div class="review-panel-inner rp-inner">
       <button class="panel-close" aria-label="Закрити">×</button>
-
       <div id="reviewContent">
-        <h3 class="panel-title">Додати відгук</h3>
-        <div class="review-form">
-          <div class="form-group">
-            <label>Ваше ім'я</label>
-            <input id="reviewName" type="text" placeholder="Іван Петренко" class="form-control">
+        <div class="rp-header">
+          <div class="rp-badge">Відгук</div>
+          <h3 class="rp-title">Поділіться своїм <em>досвідом</em></h3>
+          <p class="rp-sub">Ваш відгук допоможе іншим зробити правильний вибір</p>
+        </div>
+        <div class="rp-stars-row">
+          <span class="rp-stars-label">Ваша оцінка:</span>
+          <div class="star-picker" id="starPicker">
+            <span class="star" data-v="1">★</span>
+            <span class="star" data-v="2">★</span>
+            <span class="star" data-v="3">★</span>
+            <span class="star" data-v="4">★</span>
+            <span class="star" data-v="5">★</span>
           </div>
-          <div class="form-group">
-            <label>Текст відгуку</label>
-            <textarea id="reviewText" placeholder="Розкажіть про свій досвід..."></textarea>
+          <span class="rp-stars-hint" id="starHint">Оберіть оцінку</span>
+        </div>
+        <div class="rp-form">
+          <div class="rp-field">
+            <label class="rp-label">Ваше ім'я</label>
+            <input id="reviewName" type="text" placeholder="Іван Петренко" class="rp-input">
           </div>
-          <button class="btn-primary" type="button" id="saveReviewButton">Зберегти відгук</button>
-<p id="reviewStatus" class="review-status"></p>
+          <div class="rp-field">
+            <label class="rp-label">Ваш відгук</label>
+            <textarea id="reviewText" placeholder="Розкажіть про свій досвід співпраці з нами..." class="rp-textarea"></textarea>
+          </div>
+          <button class="rp-submit" type="button" id="saveReviewButton">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>
+            Опублікувати відгук
+          </button>
+          <p id="reviewStatus" class="review-status"></p>
         </div>
       </div>
     </div>
@@ -3202,15 +3482,21 @@
     const reviewText = document.getElementById('reviewText');
     const reviewStatus = document.getElementById('reviewStatus');
 
-    const loadReviews = () => {
-      const raw = localStorage.getItem(reviewsKey);
-      if (!raw) return [];
-      try { return JSON.parse(raw) || []; } catch { return []; }
-    };
+    // Функция для получения отзывов из базы данных (Postgres)
+const loadReviewsFromServer = () => {
+  fetch('/get-reviews')
+    .then(response => response.json())
+    .then(data => {
+      // data.reviews содержит список из вашей БД
+      if (data.reviews && data.reviews.length > 0) {
+        refreshReviewsCarousel(data.reviews);
+      }
+    })
+    .catch(error => console.error('Ошибка загрузки отзывов:', error));
+};
 
-    const saveReviews = reviews => {
-      localStorage.setItem(reviewsKey, JSON.stringify(reviews));
-    };
+// Запускаем загрузку при старте страницы
+document.addEventListener('DOMContentLoaded', loadReviewsFromServer);
 
     const openInfoPanel = (title, text) => {
       infoPanelTitle.textContent = title;
@@ -3258,50 +3544,59 @@
       const swiperEl = document.getElementById('reviewsSwiper');
       if (!container || !swiperEl) return;
 
+      const starsHtml = (n) => [1,2,3,4,5].map(i => `<span class="s${i<=n?' on':''}">★</span>`).join('');
       let html = '';
       reviews.forEach(r => {
         const date = r.created ? new Date(r.created).toLocaleDateString('uk-UA', { day:'2-digit', month:'long', year:'numeric' }) : '';
-        html += `<div class="swiper-slide">
-          <h4>${r.name}</h4>
-          <p>${r.text}</p>
-          ${date ? `<span style="font-size:12px;color:#aaa;margin-top:auto;">${date}</span>` : ''}
+        const initials = r.name.trim().split(/\s+/).map(w => w[0]).join('').slice(0,2).toUpperCase();
+        const rating = r.rating || 5;
+        html += `<div class="swiper-slide review-slide">
+          <div class="review-slide-quote">"</div>
+          <div class="review-slide-stars-top">${starsHtml(rating)}</div>
+          <p class="review-slide-text">${r.text}</p>
+          <div class="review-slide-footer">
+            <div class="review-slide-avatar">${initials}</div>
+            <div>
+              <div class="review-slide-name">${r.name}</div>
+              ${date ? `<div class="review-slide-date">${date}</div>` : ''}
+            </div>
+          </div>
         </div>`;
       });
       container.innerHTML = html;
-      swiperEl.style.display = '';
 
-      // Re-init Swiper if already exists
       if (window._reviewSwiper) { window._reviewSwiper.destroy(true, true); }
-      window._reviewSwiper = new Swiper('.mySwiper', {
+      window._reviewSwiper = new Swiper('#reviewsSwiper', {
         slidesPerView: 1,
-        spaceBetween: 20,
+        spaceBetween: 24,
         loop: reviews.length > 2,
-        autoplay: { delay: 4000, disableOnInteraction: false },
-        pagination: { el: '.swiper-pagination', clickable: true },
+        autoplay: { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true },
+        pagination: { el: '#reviewPagination', clickable: true },
+        navigation: { prevEl: '#reviewPrev', nextEl: '#reviewNext' },
         breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } }
       });
     };
 
-    const submitReview = () => {
-      const name = reviewName.value.trim();
-      const text = reviewText.value.trim();
+    saveButton.addEventListener('click', () => {
+    const formData = new FormData();
+    formData.append('name', document.getElementById('reviewName').value);
+    formData.append('review_text', document.getElementById('reviewText').value);
+    formData.append('service', 'Загальний'); // или возьмите значение из вашего селекта
 
-      if (!name || !text) {
-        reviewStatus.textContent = "Будь ласка, заповніть ім'я та текст відгуку.";
-        reviewStatus.style.color = '#c0392b';
-        return;
-      }
-
-      const reviews = loadReviews();
-      reviews.push({ name, text, created: new Date().toISOString() });
-      saveReviews(reviews);
-      reviewStatus.textContent = `Дякуємо! Ваш відгук збережено. Всього відгуків: ${reviews.length}.`;
-      reviewStatus.style.color = 'var(--green)';
-      reviewName.value = '';
-      reviewText.value = '';
-
-      refreshReviewsCarousel(reviews);
-    };
+    fetch('/save-review', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.status === 'success') {
+            // 1. Показываем благодарность
+            document.getElementById('reviewContent').innerHTML = "<h3>Дякуємо!</h3>";
+            // 2. Обновляем карусель, чтобы новый отзыв появился сразу
+            loadReviewsFromServer();
+        }
+    });
+});
 
     triggers.forEach(trigger => {
       trigger.addEventListener('click', () => {
@@ -3309,8 +3604,37 @@
       });
     });
 
-    openReviewFormButton.addEventListener('click', openReviewPanel);
-    saveReviewButton.addEventListener('click', submitReview);
+
+    // ── Star picker ──
+    const starPicker = document.getElementById('starPicker');
+    const starHint = document.getElementById('starHint');
+    const hintLabels = ['', 'Погано', 'Задовільно', 'Нормально', 'Добре', 'Відмінно!'];
+    let selectedRating = 0;
+
+    if (starPicker) {
+      const stars = starPicker.querySelectorAll('.star');
+
+      stars.forEach(star => {
+        star.addEventListener('mouseenter', () => {
+          const v = parseInt(star.dataset.v);
+          stars.forEach(s => s.classList.toggle('hov', parseInt(s.dataset.v) <= v));
+          if (starHint) starHint.textContent = hintLabels[v] || '';
+        });
+        star.addEventListener('mouseleave', () => {
+          stars.forEach(s => s.classList.remove('hov'));
+          if (starHint) starHint.textContent = selectedRating ? hintLabels[selectedRating] : 'Оберіть оцінку';
+        });
+        star.addEventListener('click', () => {
+          selectedRating = parseInt(star.dataset.v);
+          starPicker.dataset.selected = selectedRating;
+          stars.forEach(s => s.classList.toggle('sel', parseInt(s.dataset.v) <= selectedRating));
+          if (starHint) starHint.textContent = hintLabels[selectedRating];
+        });
+      });
+    }
+
+        openReviewFormButton.addEventListener('click', openReviewPanel);
+    const saveButton = document.getElementById('saveReviewButton');
     panelCloseButtons.forEach(button => button.addEventListener('click', closePanel));
     panelOverlay.addEventListener('click', closePanel);
 
