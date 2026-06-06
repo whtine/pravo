@@ -39,12 +39,16 @@ def init_db():
     conn.close()
 
 def keep_alive():
+    time.sleep(30)
     while True:
-        time.sleep(14 * 60)
         try:
             requests.get(SITE_URL + "/ping", timeout=10)
-        except Exception:
-            pass
+            print("Ping sent")
+        except Exception as e:
+            print(f"Ping error: {e}")
+        time.sleep(14 * 60)
+
+threading.Thread(target=keep_alive, daemon=True).start()
 
 @app.route('/ping')
 def ping():
