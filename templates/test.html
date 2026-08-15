@@ -1475,15 +1475,44 @@
       }
     });
 
-    // Contact form → show success modal on submit
+    // Contact form → send to backend, show success modal only on success
     const contactForm = document.getElementById('contactForm');
     const successModal = document.getElementById('successModal');
+    const submitBtn = contactForm.querySelector('.form-submit');
 
-    contactForm.addEventListener('submit', (e) => {
+    // small inline error message under the submit button
+    const formError = document.createElement('p');
+    formError.className = 'form-error';
+    formError.style.cssText = 'display:none;color:#a83232;font-size:12.5px;text-align:center;margin-top:10px;';
+    formError.textContent = 'Не вдалося надіслати заявку. Спробуйте ще раз або зателефонуйте нам.';
+    contactForm.after(formError);
+
+    contactForm.addEventListener('submit', async (e) => {
       e.preventDefault();
-      // TODO: replace with real fetch() to /send-request if you want AJAX submission
-      successModal.classList.add('show');
-      contactForm.reset();
+      formError.style.display = 'none';
+
+      const originalLabel = submitBtn.textContent;
+      submitBtn.disabled = true;
+      submitBtn.textContent = 'Надсилаємо...';
+
+      try {
+        const response = await fetch(contactForm.action, {
+          method: contactForm.method || 'POST',
+          body: new FormData(contactForm),
+          headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        });
+
+        if (!response.ok) throw new Error('Request failed: ' + response.status);
+
+        successModal.classList.add('show');
+        contactForm.reset();
+      } catch (err) {
+        console.error('Form submit error:', err);
+        formError.style.display = 'block';
+      } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalLabel;
+      }
     });
 
     successModal.addEventListener('click', (e) => {
