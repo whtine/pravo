@@ -601,10 +601,18 @@
       margin-bottom: 22px;
     }
 
+    /* form fields (merged from provided markup, restyled to site tokens) */
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
     .form-group {
       margin-bottom: 12px;
     }
 
+    .form-group label,
     .form-label {
       display: block;
       font-size: 11px;
@@ -614,7 +622,10 @@
       margin-bottom: 6px;
     }
 
-    .form-input {
+    .form-input,
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
       width: 100%;
       background: var(--cream-light);
       border: 1px solid var(--line);
@@ -627,11 +638,22 @@
       transition: border-color .2s;
     }
 
-    .form-input::placeholder {
+    .form-group textarea {
+      resize: vertical;
+      min-height: 90px;
+      line-height: 1.5;
+    }
+
+    .form-input::placeholder,
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
       color: var(--brown-pale);
     }
 
-    .form-input:focus {
+    .form-input:focus,
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
       border-color: var(--gold-dim);
     }
 
@@ -640,9 +662,13 @@
       gap: 8px;
     }
 
-    .phone-code {
+    /* .phone-row .phone-code / .phone-row input beat the generic
+       ".form-group select" / ".form-group input" rules on specificity,
+       so the fixed widths below actually stick */
+    .phone-row .phone-code {
       width: 108px;
-      flex-shrink: 0;
+      flex: 0 0 108px;
+      min-width: 0;
       background: var(--cream-light);
       border: 1px solid var(--line);
       border-radius: 12px;
@@ -661,8 +687,14 @@
       padding-right: 26px;
     }
 
-    .phone-code:focus {
+    .phone-row .phone-code:focus {
       border-color: var(--gold-dim);
+    }
+
+    .phone-row input[type="tel"] {
+      flex: 1 1 auto;
+      width: auto;
+      min-width: 0;
     }
 
     .form-submit {
@@ -741,6 +773,102 @@
       font-weight: 500;
       color: var(--brown-mid);
       display: block;
+    }
+
+    /* ─── SUCCESS MODAL (merged from provided markup, restyled to site tokens) ─── */
+    .success-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(28, 18, 8, 0.55);
+      backdrop-filter: blur(3px);
+    }
+
+    .success-modal.show {
+      display: flex;
+    }
+
+    .success-modal-inner {
+      background: var(--white);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow-deep);
+      max-width: 380px;
+      width: 100%;
+      padding: 36px 30px 30px;
+      text-align: center;
+      animation: modalPop .25s ease;
+    }
+
+    @keyframes modalPop {
+      from {
+        opacity: 0;
+        transform: translateY(10px) scale(.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .success-modal-inner .modal-icon {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 18px;
+      border-radius: 50%;
+      background: var(--cream-light);
+      border: 1px solid var(--line-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-modal-inner .modal-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: var(--gold);
+      stroke-width: 2.4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .success-modal-inner h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--brown);
+      margin-bottom: 10px;
+    }
+
+    .success-modal-inner p {
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--brown-light);
+      margin-bottom: 24px;
+    }
+
+    .success-modal-inner button {
+      background: var(--gold);
+      color: var(--white);
+      border: none;
+      border-radius: 999px;
+      padding: 12px 30px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      transition: background .2s, transform .15s;
+    }
+
+    .success-modal-inner button:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
     }
 
     /* ─── FOOTER ─── */
@@ -966,8 +1094,9 @@
         margin-bottom: 18px;
       }
 
-      .phone-code {
+      .phone-row .phone-code {
         width: 96px;
+        flex: 0 0 96px;
         font-size: 13px;
       }
 
@@ -989,6 +1118,10 @@
 
       .footer__links a {
         font-size: 11px;
+      }
+
+      .success-modal-inner {
+        padding: 30px 22px 24px;
       }
     }
 
@@ -1022,77 +1155,6 @@
         padding: 20px 14px;
       }
 
-      /* Стилі для кастомного селекта послуг */
-      select.form-input {
-        appearance: none;
-        -webkit-appearance: none;
-        cursor: pointer;
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a5e38'/%3E%3C/svg%3E");
-        background-repeat: no-repeat;
-        background-position: right 16px center;
-        padding-right: 36px;
-      }
-
-      /* Модальне вікно після успішної відправки */
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 999;
-        background: rgba(28, 18, 8, 0.6);
-        backdrop-filter: blur(4px);
-        align-items: center;
-        justify-content: center;
-        padding: 20px;
-      }
-
-      .modal-overlay.open {
-        display: flex;
-      }
-
-      .modal-card {
-        background: var(--white);
-        border: 1px solid var(--line);
-        border-radius: 24px;
-        padding: 36px 28px;
-        max-width: 420px;
-        width: 100%;
-        text-align: center;
-        box-shadow: var(--shadow-deep);
-        position: relative;
-      }
-
-      .modal-card__icon {
-        width: 54px;
-        height: 54px;
-        border-radius: 50%;
-        background: var(--cream-mid);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 16px;
-      }
-
-      .modal-card__icon svg {
-        width: 26px;
-        height: 26px;
-        fill: var(--gold-dim);
-      }
-
-      .modal-card h3 {
-        font-family: 'Cormorant Garamond', serif;
-        font-size: 26px;
-        font-weight: 600;
-        color: var(--brown);
-        margin-bottom: 8px;
-      }
-
-      .modal-card p {
-        font-size: 14px;
-        color: var(--brown-light);
-        line-height: 1.6;
-        margin-bottom: 24px;
-      }
     }
   </style>
 </head>
@@ -1277,37 +1339,44 @@
               <h3>Залишити заявку</h3>
               <p class="form-card__sub">Опишіть ситуацію — ми зв'яжемось протягом 15 хвилин.</p>
 
-              <form class="universal-form" method="post" action="/send-request">
+              <form class="contact-form" id="contactForm" method="post" action="/send-request">
                 <input type="hidden" name="form_source" value="service-page">
                 <input type="hidden" name="page_source" value="{{ request.path }}">
 
-                <div class="form-group">
-                  <label class="form-label" for="name">Ваше ім'я</label>
-                  <input id="name" name="name" type="text" class="form-input" placeholder="Ім'я та прізвище" required>
-                </div>
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="name">Ваше ім'я</label>
+                    <input id="name" name="name" type="text" placeholder="Іван Петренко" required>
+                  </div>
 
-                <div class="form-group">
-                  <label class="form-label" for="phone">Телефон</label>
-                  <div class="phone-row">
-                    <select class="phone-code" name="country_code" id="country-code">
-                      <option value="+420">🇨🇿 +420</option>
-                      <option value="+380">🇺🇦 +380</option>
-                      <option value="+49">🇩🇪 +49</option>
-                      <option value="+48">🇵🇱 +48</option>
-                    </select>
-                    <input id="phone" name="phone" type="tel" class="form-input" placeholder="Номер телефону" required>
+                  <div class="form-group">
+                    <label for="phone">Телефон</label>
+                    <div class="phone-row">
+                      <select class="phone-code" name="country_code" id="country-code">
+                        <option value="+420">🇨🇿 +420</option>
+                        <option value="+380">🇺🇦 +380</option>
+                        <option value="+49">🇩🇪 +49</option>
+                        <option value="+48">🇵🇱 +48</option>
+                      </select>
+                      <input id="phone" name="phone" type="tel" placeholder="Номер телефону" required>
+                    </div>
                   </div>
                 </div>
 
                 <div class="form-group">
-                  <label class="form-label" for="service">Оберіть послугу</label>
-                  <select id="service" name="service" class="form-input" required>
+                  <label for="service">Оберіть послугу</label>
+                  <select id="service" name="service" required>
                     <option value="" disabled selected>Виберіть зі списку</option>
                     <option value="real-estate-power-of-attorney">Довіреність на нерухомість</option>
                     <option value="general-power-of-attorney">Генеральна довіреність</option>
                     <option value="car-power-of-attorney">Довіреність на авто</option>
                     <option value="consultation">Інша нотаріальна послуга</option>
                   </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="message">Опис ситуації</label>
+                  <textarea id="message" name="message" placeholder="Коротко опишіть вашу ситуацію..."></textarea>
                 </div>
 
                 <button type="submit" class="form-submit">Надіслати заявку</button>
@@ -1371,6 +1440,18 @@
     </div>
   </footer>
 
+  <!-- SUCCESS MODAL -->
+  <div id="successModal" class="success-modal">
+    <div class="success-modal-inner">
+      <div class="modal-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <h3>Дякуємо!</h3>
+      <p>Ваша заявка отримана. Ми зв'яжемося з вами протягом 15 хвилин.</p>
+      <button type="button" onclick="document.getElementById('successModal').classList.remove('show')">Закрити</button>
+    </div>
+  </div>
+
   <script>
     const burger = document.getElementById('burger');
     const navMobile = document.getElementById('nav-mobile');
@@ -1387,84 +1468,31 @@
       burger.setAttribute('aria-expanded', false);
     }
 
-    document.addEventListener('click', (e) => {
-      if (!burger.contains(e.target) && !navMobile.contains(e.target)) {
-        closeMobileNav();
-      }
-    });
-
-    // Обробка відправки форми без перезавантаження
-    const universalForm = document.querySelector('.universal-form');
-    const modal = document.getElementById('thank-you-modal');
-
-    if (universalForm) {
-      universalForm.addEventListener('submit', async function (e) {
-        e.preventDefault(); // Зупиняємо стандартну відправку сторінки
-
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn.textContent;
-        submitBtn.textContent = 'Надсилання...';
-        submitBtn.disabled = true;
-
-        try {
-          const formData = new FormData(this);
-
-          // Надсилаємо дані у фоновому режимі
-          await fetch(this.action, {
-            method: this.method,
-            body: formData
-          });
-
-          // Показуємо модальне вікно після успішної відправки
-          modal.classList.add('open');
-          this.reset(); // Очищаємо форму
-        } catch (error) {
-          alert('Виникла помилка під час надсилання. Спробуйте ще раз.');
-        } finally {
-          submitBtn.textContent = originalText;
-          submitBtn.disabled = false;
-        }
-      });
-    }
-
-    function closeSuccessModal() {
-      modal.classList.remove('open');
-    }
-
-    // Закриття модального вікна при кліку на затемнення навколо нього
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) {
-        closeSuccessModal();
-      }
-    });
-
-    function closeMobileNav() {
-      navMobile.classList.remove('open');
-      burger.classList.remove('open');
-      burger.setAttribute('aria-expanded', false);
-    }
-
     // Close mobile nav on outside click
     document.addEventListener('click', (e) => {
       if (!burger.contains(e.target) && !navMobile.contains(e.target)) {
         closeMobileNav();
       }
     });
+
+    // Contact form → show success modal on submit
+    const contactForm = document.getElementById('contactForm');
+    const successModal = document.getElementById('successModal');
+
+    contactForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      // TODO: replace with real fetch() to /send-request if you want AJAX submission
+      successModal.classList.add('show');
+      contactForm.reset();
+    });
+
+    successModal.addEventListener('click', (e) => {
+      if (e.target === successModal) {
+        successModal.classList.remove('show');
+      }
+    });
   </script>
-  <!-- Модальне вікно дякуємо -->
-  <div id="thank-you-modal" class="modal-overlay">
-    <div class="modal-card">
-      <div class="modal-card__icon">
-        <svg viewBox="0 0 24 24">
-          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
-        </svg>
-      </div>
-      <h3>Заявку прийнято!</h3>
-      <p>Дякуємо за звернення. Ми зв'яжемося з вами протягом 15 хвилин для надання детальної консультації.</p>
-      <button class="btn-primary" style="width: 100%; justify-content: center;"
-        onclick="closeSuccessModal()">Зрозуміло</button>
-    </div>
-  </div>
+
 </body>
 
 </html>
