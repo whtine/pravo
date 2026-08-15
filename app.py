@@ -3,6 +3,7 @@ import requests
 import psycopg2
 import threading
 import time
+import supabase
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
