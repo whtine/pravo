@@ -1347,11 +1347,22 @@
     }
 
     .review-stars {
-      font-size: 16px;
-      color: var(--gold);
-      letter-spacing: 3px;
+      display: flex;
+      align-items: center;
+      gap: 2px;
       margin-bottom: 6px;
       line-height: 1
+    }
+
+    .review-stars .s {
+      font-size: 16px;
+      color: #e0d4c8;
+      letter-spacing: 3px;
+      display: inline-block;
+    }
+
+    .review-stars .s.on {
+      color: var(--gold);
     }
 
     .review-rating-num {
@@ -2939,7 +2950,7 @@
         </div>
         <div class="review-header-right">
           <div class="review-rating-badge">
-            <div class="review-stars">★★★★★</div>
+            <div class="review-stars" id="avgStars" aria-label="Середня оцінка"></div>
             <div class="review-rating-num" id="avgRating">5.0</div>
             <div class="review-rating-label">середня оцінка</div>
           </div>
@@ -3386,12 +3397,19 @@
       return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
     function starsHtml(n) {
-      return [1, 2, 3, 4, 5].map(i => `<span class="s${i <= n ? ' on' : ''}">\u2605</span>`).join('');
+      const rounded = Math.max(0, Math.min(5, Math.round(Number(n) || 0)));
+      return [1, 2, 3, 4, 5].map(i => `<span class="s${i <= rounded ? ' on' : ''}">${i <= rounded ? '\u2605' : '\u2606'}</span>`).join('');
     }
     function updateAvgRating(reviews) {
-      if (!reviews.length) return;
-      const avg = reviews.reduce((s, r) => s + (r.rating || 5), 0) / reviews.length;
+      const avgStars = document.getElementById('avgStars');
+      if (!reviews.length) {
+        avgStars.innerHTML = starsHtml(5);
+        document.getElementById('avgRating').textContent = '5.0';
+        return;
+      }
+      const avg = reviews.reduce((s, r) => s + (Number(r.rating) || 5), 0) / reviews.length;
       document.getElementById('avgRating').textContent = avg.toFixed(1);
+      avgStars.innerHTML = starsHtml(avg);
     }
 
     /* ── BUILD SLIDES ── */
