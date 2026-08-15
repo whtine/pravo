@@ -1,43 +1,21 @@
 import os
 import requests
-import psycopg2
 import threading
 import time
-import supabase
 from flask import Flask, render_template, request, jsonify
+from supabase import create_client, Client
 
 app = Flask(__name__)
 
-DB_URL = os.environ.get("DATABASE_URL")
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 SITE_URL = os.environ.get("SITE_URL", "https://ВАШ-САЙТ.onrender.com")
 
-def get_db_connection():
-    return psycopg2.connect(DB_URL, sslmode='require')
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 def init_db():
-    conn = get_db_connection()
-    cur = conn.cursor()
-    cur.execute("""
-        CREATE TABLE IF NOT EXISTS leads (
-            id         SERIAL PRIMARY KEY,
-            name       VARCHAR(100),
-            phone      VARCHAR(50),
-            service    VARCHAR(200),
-            message    TEXT,
-            created_at TIMESTAMP DEFAULT NOW()
-        );
-        CREATE TABLE IF NOT EXISTS reviews (
-            id         SERIAL PRIMARY KEY,
-            name       VARCHAR(100) NOT NULL,
-            role       VARCHAR(150),
-            review_text TEXT NOT NULL,
-            rating     SMALLINT DEFAULT 5,
-            created_at TIMESTAMP DEFAULT NOW()
-        );
-    """)
-    conn.commit()
-    cur.close()
-    conn.close()
+    # В Supabase таблицы создаются заранее в панеле управления через SQL Editor.
+    pass
 
 def keep_alive():
     time.sleep(30)
@@ -82,15 +60,12 @@ def send_request():
     message      = request.form.get('message', '')
 
     try:
-        conn = get_db_connection()
-        cur  = conn.cursor()
-        cur.execute(
-            'INSERT INTO leads (name, phone, service, message) VALUES (%s, %s, %s, %s)',
-            (name, full_phone, service, message)
-        )
-        conn.commit()
-        cur.close()
-        conn.close()
+        supabase.table("leads").insert({
+            "name": name,
+            "phone": full_phone,
+            "service": service,
+            "message": message
+        }).execute()
     except Exception as e:
         print(f"DB error: {e}")
 
@@ -130,15 +105,12 @@ def save_review():
         return jsonify({"status": "error", "message": "Заповніть всі поля"}), 400
 
     try:
-        conn = get_db_connection()
-        cur  = conn.cursor()
-        cur.execute(
-            'INSERT INTO reviews (name, role, review_text, rating) VALUES (%s, %s, %s, %s)',
-            (name, role, review_text, rating)
-        )
-        conn.commit()
-        cur.close()
-        conn.close()
+        supabase.table("reviews").insert({
+            "name": name,
+            "role": role,
+            "review_text": review_text,
+            "rating": rating
+        }).execute()
     except Exception as e:
         print(f"DB error: {e}")
         return jsonify({"status": "error", "message": "Помилка бази даних"}), 500
@@ -165,26 +137,20 @@ def save_review():
 @app.route('/get-reviews', methods=['GET'])
 def get_reviews():
     try:
-        conn = get_db_connection()
-        cur  = conn.cursor()
-        cur.execute("""
-            SELECT name, role, review_text, rating, created_at
-            FROM reviews
-            ORDER BY created_at DESC
-            LIMIT 20
-        """)
-        rows = cur.fetchall()
-        cur.close()
-        conn.close()
+        response = supabase.table("reviews") \
+            .select("name, role, review_text, rating, created_at") \
+            .order("created_at", desc=True) \
+            .limit(20) \
+            .execute()
 
         reviews = []
-        for r in rows:
+        for r in response.data:
             reviews.append({
-                "name":       r[0] or "",
-                "role":       r[1] or "",
-                "text":       r[2] or "",
-                "rating":     int(r[3]) if r[3] else 5,
-                "created_at": r[4].isoformat() if r[4] else ""
+                "name":       r.get("name") or "",
+                "role":       r.get("role") or "",
+                "text":       r.get("review_text") or "",
+                "rating":     int(r.get("rating")) if r.get("rating") else 5,
+                "created_at": r.get("created_at") or ""
             })
         return jsonify({"reviews": reviews})
 
@@ -206,42 +172,35 @@ def webhook():
             reply = "Вітаю! Команди:\n/history — останні заявки\n/reviews — останні 5 відгуків"
 
         elif text == '/history':
-            conn = get_db_connection()
-            cur  = conn.cursor()
-            cur.execute("""
-                SELECT name, phone, service
-                FROM leads
-                ORDER BY created_at DESC
-                LIMIT 5
-            """)
-            leads = cur.fetchall()
-            cur.close()
-            conn.close()
+            response = supabase.table("leads") \
+                .select("name, phone, service") \
+                .order("created_at", desc=True) \
+                .limit(5) \
+                .execute()
+
+            leads = response.data
             if leads:
                 reply = "Останні 5 заявок:\n\n" + "\n\n".join(
-                    [f"👤 {l[0]}\n📞 {l[1]}\n🛠 {l[2]}" for l in leads]
+                    [f"👤 {l.get('name', '')}\n📞 {l.get('phone', '')}\n🛠 {l.get('service', '')}" for l in leads]
                 )
             else:
                 reply = "Заявок немає."
 
         elif text == '/reviews':
-            conn = get_db_connection()
-            cur  = conn.cursor()
-            cur.execute("""
-                SELECT name, role, review_text, rating
-                FROM reviews
-                ORDER BY created_at DESC
-                LIMIT 5
-            """)
-            revs = cur.fetchall()
-            cur.close()
-            conn.close()
+            response = supabase.table("reviews") \
+                .select("name, role, review_text, rating") \
+                .order("created_at", desc=True) \
+                .limit(5) \
+                .execute()
+
+            revs = response.data
             if revs:
                 lines = []
                 for r in revs:
-                    stars    = '★' * (r[3] or 5) + '☆' * (5 - (r[3] or 5))
-                    role_str = f" ({r[1]})" if r[1] else ""
-                    lines.append(f"👤 {r[0]}{role_str} {stars}\n💬 {r[2]}")
+                    rating_val = r.get('rating') or 5
+                    stars      = '★' * rating_val + '☆' * (5 - rating_val)
+                    role_str   = f" ({r.get('role')})" if r.get('role') else ""
+                    lines.append(f"👤 {r.get('name', '')}{role_str} {stars}\n💬 {r.get('review_text', '')}")
                 reply = "Останні 5 відгуків:\n\n" + "\n\n".join(lines)
             else:
                 reply = "Відгуків немає."
