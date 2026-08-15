@@ -204,7 +204,6 @@ def get_stats_text():
             f"🟢За останні 24 години: <b>{count_day}</b>\n"
             f"🟡За останній тиждень: <b>{count_week}</b>\n"
             f"🔵За останній місяць: <b>{count_month}</b>\n\n"
-            f"<i>* Бот-запити та сервісы моніторингу не враховуються.</i>"
         )
     except Exception as e:
         print(f"Stats error: {e}")
