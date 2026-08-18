@@ -71,6 +71,12 @@ def service_page():
 def test_page():
     return render_template('test.html')
 
+app.get('/loaderio-4444df88f16b38e0f103263f10e9fdcc.txt', (req, res) => {
+  res.type('text/plain');
+  res.send('loaderio-4444df88f16b38e0f103263f10e9fdcc');
+});
+
+
 # --- ЗАЯВКИ ---
 @app.route('/send-request', methods=['POST'])
 def send_request():
