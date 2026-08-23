@@ -1,10 +1,14 @@
 import os
+import hmac
 import requests
 import threading
 import time
 from datetime import datetime, timedelta, timezone
 from flask import Flask, render_template, request, jsonify
 from supabase import create_client, Client
+from cryptography.fernet import Fernet, InvalidToken
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 app = Flask(__name__)
 
@@ -12,23 +16,57 @@ SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
 SITE_URL = os.environ.get("SITE_URL", "https://ВАШ-САЙТ.onrender.com")
 
+
+TG_WEBHOOK_SECRET = os.environ.get("TG_WEBHOOK_SECRET")
+
+
+ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
+fernet = Fernet(ENCRYPTION_KEY.encode()) if ENCRYPTION_KEY else None
+
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+# --- ЛИМИТЫ ЗАПРОСОВ ---
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://",  # для продакшена с несколькими воркерами лучше redis://...
+)
+
+
+def encrypt_value(value: str) -> str:
+    """Шифрует строку. Если ключа нет — возвращает как есть (для локальной разработки)."""
+    if not fernet or not value:
+        return value
+    return fernet.encrypt(value.encode()).decode()
+
+
+def decrypt_value(value: str) -> str:
+    """Расшифровывает строку. Если не получилось (старые незашифрованные данные) — возвращает как есть."""
+    if not fernet or not value:
+        return value
+    try:
+        return fernet.decrypt(value.encode()).decode()
+    except (InvalidToken, ValueError):
+        return value
+
+
+def clip(text: str, max_len: int) -> str:
+    return (text or "").strip()[:max_len]
+
 
 # --- УЧЕТ ПОСЕТИТЕЛЕЙ ---
 @app.before_request
 def track_visits():
-    # Игнорируем фоновые запросы и служебные роуты
     if request.path in ['/ping', '/webhook', '/send-request', '/save-review', '/get-reviews']:
         return
 
     user_agent = request.headers.get('User-Agent', '')
 
-    # Фильтруем пинги и известных ботов (UptimeRobot, Headless и т.д.)
     bot_keywords = ['uptimerobot', 'bot', 'spider', 'crawler', 'python-requests']
     if any(keyword in user_agent.lower() for keyword in bot_keywords):
         return
 
-    # Сохраняем только реальные визиты пользователей
     try:
         ip = request.headers.get('X-Forwarded-For', request.remote_addr)
         if ip and ',' in ip:
@@ -41,6 +79,7 @@ def track_visits():
     except Exception as e:
         print(f"Tracking error: {e}")
 
+
 # --- KEEP ALIVE ---
 def keep_alive():
     time.sleep(30)
@@ -52,50 +91,56 @@ def keep_alive():
             print(f"Ping error: {e}")
         time.sleep(14 * 60)
 
+
 threading.Thread(target=keep_alive, daemon=True).start()
+
 
 @app.route('/ping')
 def ping():
     return "ok", 200
+
 
 # --- СТРАНИЦЫ ---
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/services')
 def service_page():
     return render_template('service.html')
 
-@app.route('/test')
-def test_page():
-    return render_template('test.html')
 
 @app.route('/loaderio-4444df88f16b38e0f103263f10e9fdcc.txt')
 def loaderio_verify():
     return 'loaderio-4444df88f16b38e0f103263f10e9fdcc', 200, {'Content-Type': 'text/plain'}
 
 
-
 # --- ЗАЯВКИ ---
 @app.route('/send-request', methods=['POST'])
+@limiter.limit("5 per minute")
 def send_request():
-    name         = request.form.get('name', '')
-    phone        = request.form.get('phone', '')
-    country_code = request.form.get('country_code', '')
-    full_phone   = f"{country_code}{phone}"
-    service      = request.form.get('service', '')
-    message      = request.form.get('message', '')
+    name         = clip(request.form.get('name', ''), 100)
+    phone_raw    = clip(request.form.get('phone', ''), 30)
+    country_code = clip(request.form.get('country_code', ''), 10)
+    service      = clip(request.form.get('service', ''), 100)
+    message      = clip(request.form.get('message', ''), 2000)
+
+    if not name or not phone_raw:
+        return jsonify({"status": "error", "message": "Заповніть обов'язкові поля"}), 400
+
+    full_phone = f"{country_code}{phone_raw}"
 
     try:
         supabase.table("leads").insert({
             "name": name,
-            "phone": full_phone,
+            "phone": encrypt_value(full_phone),
             "service": service,
             "message": message
         }).execute()
     except Exception as e:
         print(f"DB error: {e}")
+        return jsonify({"status": "error", "message": "Помилка збереження заявки"}), 500
 
     try:
         tg_text = (
@@ -115,12 +160,14 @@ def send_request():
 
     return jsonify({"status": "success"})
 
+
 # --- ОТЗЫВЫ ---
 @app.route('/save-review', methods=['POST'])
+@limiter.limit("3 per minute")
 def save_review():
-    name        = request.form.get('name', '').strip()
-    role        = request.form.get('role', '').strip()
-    review_text = request.form.get('review_text', '').strip()
+    name        = clip(request.form.get('name', ''), 100)
+    role        = clip(request.form.get('role', ''), 100)
+    review_text = clip(request.form.get('review_text', ''), 1000)
 
     try:
         rating = int(request.form.get('rating', 5))
@@ -163,6 +210,7 @@ def save_review():
 
 
 @app.route('/get-reviews', methods=['GET'])
+@limiter.limit("30 per minute")
 def get_reviews():
     try:
         response = supabase.table("reviews") \
@@ -183,9 +231,8 @@ def get_reviews():
         return jsonify({"reviews": reviews})
 
     except Exception as e:
-        import traceback
-        traceback.print_exc()
-        return jsonify({"reviews": [], "error": str(e)}), 500
+        print(f"get-reviews error: {e}")
+        return jsonify({"reviews": []}), 500
 
 
 # --- TELEGRAM BOT ---
@@ -196,7 +243,6 @@ def get_stats_text():
     month_ago = (now - timedelta(days=30)).isoformat()
 
     try:
-        # Запросы к БД
         res_day = supabase.table("visits").select("id", count="exact").gte("created_at", day_ago).execute()
         res_week = supabase.table("visits").select("id", count="exact").gte("created_at", week_ago).execute()
         res_month = supabase.table("visits").select("id", count="exact").gte("created_at", month_ago).execute()
@@ -215,12 +261,29 @@ def get_stats_text():
         print(f"Stats error: {e}")
         return "Не вдалося отримати статистику."
 
+
+def is_authorized_chat(chat_id) -> bool:
+    """Сверяет chat_id входящего сообщения с владельцем бота — защита от чужих сообщений."""
+    expected = os.environ.get('TG_CHAT_ID', '')
+    return hmac.compare_digest(str(chat_id), str(expected))
+
+
 @app.route('/webhook', methods=['POST'])
 def webhook():
+    # 1) Проверяем секретный токен, который Telegram присылает в заголовке.
+    #    Настраивается один раз при регистрации вебхука через setWebhook(secret_token=...).
+    incoming_secret = request.headers.get('X-Telegram-Bot-Api-Secret-Token', '')
+    if not TG_WEBHOOK_SECRET or not hmac.compare_digest(incoming_secret, TG_WEBHOOK_SECRET):
+        return "forbidden", 403
+
     try:
         data    = request.json
         chat_id = data['message']['chat']['id']
         text    = data['message'].get('text', '')
+
+        # 2) Даже с верным секретом отвечаем командами только своему chat_id.
+        if not is_authorized_chat(chat_id):
+            return "ok"
 
         if text == '/start':
             reply = "Вітаю! Команди:\n/stats — статистика відвідувань\n/history — останні заявки\n/reviews — останні 5 відгуків"
@@ -238,7 +301,7 @@ def webhook():
             leads = response.data
             if leads:
                 reply = "Останні 5 заявок:\n\n" + "\n\n".join(
-                    [f"👤 {l.get('name', '')}\n📞 {l.get('phone', '')}\n🛠 {l.get('service', '')}" for l in leads]
+                    [f"👤 {l.get('name', '')}\n📞 {decrypt_value(l.get('phone', ''))}\n🛠 {l.get('service', '')}" for l in leads]
                 )
             else:
                 reply = "Заявок немає."
@@ -277,4 +340,4 @@ def webhook():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=False)
