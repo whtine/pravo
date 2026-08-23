@@ -105,6 +105,10 @@ def ping():
 def index():
     return render_template('index.html')
 
+@app.route('/test')
+def index():
+    return render_template('test.html')
+    
 
 @app.route('/services')
 def service_page():
