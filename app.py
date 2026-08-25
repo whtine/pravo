@@ -7,8 +7,7 @@ from datetime import datetime, timedelta, timezone
 from flask import Flask, render_template, request, jsonify
 from supabase import create_client, Client
 from cryptography.fernet import Fernet, InvalidToken
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+
 
 app = Flask(__name__)
 
