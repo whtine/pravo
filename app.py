@@ -114,7 +114,6 @@ def loaderio_verify():
 
 # --- ЗАЯВКИ ---
 @app.route('/send-request', methods=['POST'])
-@limiter.limit("20 per minute")
 def send_request():
     name         = clip(request.form.get('name', ''), 100)
     phone_raw    = clip(request.form.get('phone', ''), 30)
@@ -159,7 +158,6 @@ def send_request():
 
 # --- ОТЗЫВЫ ---
 @app.route('/save-review', methods=['POST'])
-@limiter.limit("30 per minute")
 def save_review():
     name        = clip(request.form.get('name', ''), 100)
     role        = clip(request.form.get('role', ''), 100)
@@ -206,7 +204,6 @@ def save_review():
 
 
 @app.route('/get-reviews', methods=['GET'])
-@limiter.limit("100 per minute")
 def get_reviews():
     try:
         response = supabase.table("reviews") \
@@ -291,7 +288,6 @@ def webhook():
             response = supabase.table("leads") \
                 .select("name, phone, service") \
                 .order("created_at", desc=True) \
-                .limit(5) \
                 .execute()
 
             leads = response.data
@@ -306,7 +302,6 @@ def webhook():
             response = supabase.table("reviews") \
                 .select("name, role, review_text, rating") \
                 .order("created_at", desc=True) \
-                .limit(5) \
                 .execute()
 
             revs = response.data
