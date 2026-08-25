@@ -25,13 +25,6 @@ fernet = Fernet(ENCRYPTION_KEY.encode()) if ENCRYPTION_KEY else None
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# --- ЛИМИТЫ ЗАПРОСОВ ---
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"],
-    storage_uri="memory://",  # для продакшена с несколькими воркерами лучше redis://...
-)
 
 
 def encrypt_value(value: str) -> str:
@@ -122,7 +115,7 @@ def loaderio_verify():
 
 # --- ЗАЯВКИ ---
 @app.route('/send-request', methods=['POST'])
-@limiter.limit("5 per minute")
+@limiter.limit("20 per minute")
 def send_request():
     name         = clip(request.form.get('name', ''), 100)
     phone_raw    = clip(request.form.get('phone', ''), 30)
@@ -167,7 +160,7 @@ def send_request():
 
 # --- ОТЗЫВЫ ---
 @app.route('/save-review', methods=['POST'])
-@limiter.limit("3 per minute")
+@limiter.limit("30 per minute")
 def save_review():
     name        = clip(request.form.get('name', ''), 100)
     role        = clip(request.form.get('role', ''), 100)
@@ -214,7 +207,7 @@ def save_review():
 
 
 @app.route('/get-reviews', methods=['GET'])
-@limiter.limit("30 per minute")
+@limiter.limit("100 per minute")
 def get_reviews():
     try:
         response = supabase.table("reviews") \
