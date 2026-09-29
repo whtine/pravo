@@ -342,8 +342,6 @@ if __name__ == '__main__':
 
 if __name__ == '__main__':
     app.run(debug=False)
-ebhook error: {e}")
-
     return "ok"
 
 
