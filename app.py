@@ -12,29 +12,24 @@ from cryptography.fernet import Fernet, InvalidToken
 app = Flask(__name__)
 
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
-SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+SUPABASE_SERVICE_KEY = os.environ.get("SUPABASE_SERVICE_KEY") or os.environ.get("SUPABASE_KEY")
 SITE_URL = os.environ.get("SITE_URL", "https://ВАШ-САЙТ.onrender.com")
 
-
 TG_WEBHOOK_SECRET = os.environ.get("TG_WEBHOOK_SECRET")
-
 
 ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
 fernet = Fernet(ENCRYPTION_KEY.encode()) if ENCRYPTION_KEY else None
 
-supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
-
+supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
 
 def encrypt_value(value: str) -> str:
-    """Шифрует строку. Если ключа нет — возвращает как есть (для локальной разработки)."""
     if not fernet or not value:
         return value
     return fernet.encrypt(value.encode()).decode()
 
 
 def decrypt_value(value: str) -> str:
-    """Расшифровывает строку. Если не получилось (старые незашифрованные данные) — возвращает как есть."""
     if not fernet or not value:
         return value
     try:
@@ -47,7 +42,6 @@ def clip(text: str, max_len: int) -> str:
     return (text or "").strip()[:max_len]
 
 
-# --- УЧЕТ ПОСЕТИТЕЛЕЙ ---
 @app.before_request
 def track_visits():
     if request.path in ['/ping', '/webhook', '/send-request', '/save-review', '/get-reviews']:
@@ -72,7 +66,6 @@ def track_visits():
         print(f"Tracking error: {e}")
 
 
-# --- KEEP ALIVE ---
 def keep_alive():
     time.sleep(30)
     while True:
@@ -92,15 +85,15 @@ def ping():
     return "ok", 200
 
 
-# --- СТРАНИЦЫ ---
 @app.route('/')
 def index():
     return render_template('index.html')
 
+
 @app.route('/test')
 def test():
     return render_template('test.html')
-    
+
 
 @app.route('/services')
 def service_page():
@@ -112,14 +105,13 @@ def loaderio_verify():
     return 'loaderio-4444df88f16b38e0f103263f10e9fdcc', 200, {'Content-Type': 'text/plain'}
 
 
-# --- ЗАЯВКИ ---
 @app.route('/send-request', methods=['POST'])
 def send_request():
-    name         = clip(request.form.get('name', ''), 100)
-    phone_raw    = clip(request.form.get('phone', ''), 30)
+    name = clip(request.form.get('name', ''), 100)
+    phone_raw = clip(request.form.get('phone', ''), 30)
     country_code = clip(request.form.get('country_code', ''), 10)
-    service      = clip(request.form.get('service', ''), 100)
-    message      = clip(request.form.get('message', ''), 2000)
+    service = clip(request.form.get('service', ''), 100)
+    message = clip(request.form.get('message', ''), 2000)
 
     if not name or not phone_raw:
         return jsonify({"status": "error", "message": "Заповніть обов'язкові поля"}), 400
@@ -156,11 +148,10 @@ def send_request():
     return jsonify({"status": "success"})
 
 
-# --- ОТЗЫВЫ ---
 @app.route('/save-review', methods=['POST'])
 def save_review():
-    name        = clip(request.form.get('name', ''), 100)
-    role        = clip(request.form.get('role', ''), 100)
+    name = clip(request.form.get('name', ''), 100)
+    role = clip(request.form.get('role', ''), 100)
     review_text = clip(request.form.get('review_text', ''), 1000)
 
     try:
@@ -185,7 +176,7 @@ def save_review():
         return jsonify({"status": "error", "message": "Помилка бази даних"}), 500
 
     try:
-        stars   = '★' * rating + '☆' * (5 - rating)
+        stars = '★' * rating + '☆' * (5 - rating)
         tg_text = (
             f"💬 <b>Новий відгук!</b>\n"
             f"👤 {name}" + (f" ({role})" if role else "") +
@@ -215,10 +206,10 @@ def get_reviews():
         reviews = []
         for r in response.data:
             reviews.append({
-                "name":       r.get("name") or "",
-                "role":       r.get("role") or "",
-                "text":       r.get("review_text") or "",
-                "rating":     int(r.get("rating")) if r.get("rating") else 5,
+                "name": r.get("name") or "",
+                "role": r.get("role") or "",
+                "text": r.get("review_text") or "",
+                "rating": int(r.get("rating")) if r.get("rating") else 5,
                 "created_at": r.get("created_at") or ""
             })
         return jsonify({"reviews": reviews})
@@ -228,7 +219,6 @@ def get_reviews():
         return jsonify({"reviews": []}), 500
 
 
-# --- TELEGRAM BOT ---
 def get_stats_text():
     now = datetime.now(timezone.utc)
     day_ago = (now - timedelta(days=1)).isoformat()
@@ -256,25 +246,21 @@ def get_stats_text():
 
 
 def is_authorized_chat(chat_id) -> bool:
-    """Сверяет chat_id входящего сообщения с владельцем бота — защита от чужих сообщений."""
     expected = os.environ.get('TG_CHAT_ID', '')
     return hmac.compare_digest(str(chat_id), str(expected))
 
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
-    # 1) Проверяем секретный токен, который Telegram присылает в заголовке.
-    #    Настраивается один раз при регистрации вебхука через setWebhook(secret_token=...).
     incoming_secret = request.headers.get('X-Telegram-Bot-Api-Secret-Token', '')
     if not TG_WEBHOOK_SECRET or not hmac.compare_digest(incoming_secret, TG_WEBHOOK_SECRET):
         return "forbidden", 403
 
     try:
-        data    = request.json
+        data = request.json
         chat_id = data['message']['chat']['id']
-        text    = data['message'].get('text', '')
+        text = data['message'].get('text', '')
 
-        # 2) Даже с верным секретом отвечаем командами только своему chat_id.
         if not is_authorized_chat(chat_id):
             return "ok"
 
@@ -309,7 +295,30 @@ def webhook():
                 lines = []
                 for r in revs:
                     rating_val = r.get('rating') or 5
-                    stars      = '★' * rating_val + '☆' * (5 - rating_val)
+                    stars = '★' * rating_val + '☆' * (5 - rating_val)
+                    role_str = f" ({r.get('role')})" if r.get('role') else ""
+                    lines.append(f"👤 {r.get('name', '')}{role_str} {stars}\n💬 {r.get('review_text', '')}")
+                reply = "Останні 5 відгуків:\n\n" + "\n\n".join(lines)
+            else:
+                reply = "Відгуків немає."
+
+        else:
+            reply = "Невідома команда. Введіть /start для списку команд."
+
+        requests.post(
+            f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
+            data={"chat_id": chat_id, "text": reply, "parse_mode": "HTML"},
+            timeout=5
+        )
+    except Exception as e:
+        print(f"Webhook error: {e}")
+
+    return "ok"
+
+
+if __name__ == '__main__':
+    app.run(debug=False)
+ - rating_val)
                     role_str   = f" ({r.get('role')})" if r.get('role') else ""
                     lines.append(f"👤 {r.get('name', '')}{role_str} {stars}\n💬 {r.get('review_text', '')}")
                 reply = "Останні 5 відгуків:\n\n" + "\n\n".join(lines)
