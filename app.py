@@ -318,6 +318,13 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(debug=False)
+ebhook error: {e}")
+
+    return "ok"
+
+
+if __name__ == '__main__':
+    app.run(debug=False)
  - rating_val)
                     role_str   = f" ({r.get('role')})" if r.get('role') else ""
                     lines.append(f"👤 {r.get('name', '')}{role_str} {stars}\n💬 {r.get('review_text', '')}")
