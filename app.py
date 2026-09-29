@@ -1,8 +1,10 @@
 import os
+import re
 import hmac
 import requests
 import threading
 import time
+from html import escape
 from datetime import datetime, timedelta, timezone
 from flask import Flask, render_template, request, jsonify
 from supabase import create_client, Client
@@ -19,6 +21,9 @@ TG_WEBHOOK_SECRET = os.environ.get("TG_WEBHOOK_SECRET")
 
 ENCRYPTION_KEY = os.environ.get("ENCRYPTION_KEY")
 fernet = Fernet(ENCRYPTION_KEY.encode()) if ENCRYPTION_KEY else None
+
+if not SUPABASE_URL or not SUPABASE_SERVICE_KEY:
+    raise RuntimeError("SUPABASE_URL / SUPABASE_SERVICE_KEY are not set")
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY)
 
@@ -42,9 +47,19 @@ def clip(text: str, max_len: int) -> str:
     return (text or "").strip()[:max_len]
 
 
+def tg_send(chat_id, text):
+    requests.post(
+        f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
+        data={"chat_id": chat_id, "text": text[:4000], "parse_mode": "HTML"},
+        timeout=5
+    )
+
+
 @app.before_request
 def track_visits():
-    if request.path in ['/ping', '/webhook', '/send-request', '/save-review', '/get-reviews']:
+    if request.path.startswith('/static') or request.path in [
+        '/ping', '/webhook', '/send-request', '/save-review', '/get-reviews'
+    ]:
         return
 
     user_agent = request.headers.get('User-Agent', '')
@@ -77,7 +92,8 @@ def keep_alive():
         time.sleep(14 * 60)
 
 
-threading.Thread(target=keep_alive, daemon=True).start()
+if "ВАШ-САЙТ" not in SITE_URL:
+    threading.Thread(target=keep_alive, daemon=True).start()
 
 
 @app.route('/ping')
@@ -118,6 +134,9 @@ def send_request():
 
     full_phone = f"{country_code}{phone_raw}"
 
+    if not re.fullmatch(r"\+?[\d\s\-()]{7,20}", full_phone):
+        return jsonify({"status": "error", "message": "Невірний номер телефону"}), 400
+
     try:
         supabase.table("leads").insert({
             "name": name,
@@ -132,16 +151,12 @@ def send_request():
     try:
         tg_text = (
             f"📩 <b>Нова заявка!</b>\n"
-            f"Ім'я: {name}\n"
-            f"Телефон: {full_phone}\n"
-            f"Послуга: {service}\n"
-            f"Питання: {message}"
+            f"Ім'я: {escape(name)}\n"
+            f"Телефон: {escape(full_phone)}\n"
+            f"Послуга: {escape(service)}\n"
+            f"Питання: {escape(message)}"
         )
-        requests.post(
-            f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
-            data={"chat_id": os.environ['TG_CHAT_ID'], "text": tg_text, "parse_mode": "HTML"},
-            timeout=5
-        )
+        tg_send(os.environ['TG_CHAT_ID'], tg_text)
     except Exception as e:
         print(f"TG error: {e}")
 
@@ -179,15 +194,11 @@ def save_review():
         stars = '★' * rating + '☆' * (5 - rating)
         tg_text = (
             f"💬 <b>Новий відгук!</b>\n"
-            f"👤 {name}" + (f" ({role})" if role else "") +
+            f"👤 {escape(name)}" + (f" ({escape(role)})" if role else "") +
             f"\n{stars} ({rating}/5)\n"
-            f"📝 {review_text}"
+            f"📝 {escape(review_text)}"
         )
-        requests.post(
-            f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
-            data={"chat_id": os.environ['TG_CHAT_ID'], "text": tg_text, "parse_mode": "HTML"},
-            timeout=5
-        )
+        tg_send(os.environ['TG_CHAT_ID'], tg_text)
     except Exception as e:
         print(f"TG error: {e}")
 
@@ -257,9 +268,13 @@ def webhook():
         return "forbidden", 403
 
     try:
-        data = request.json
-        chat_id = data['message']['chat']['id']
-        text = data['message'].get('text', '')
+        data = request.get_json(silent=True) or {}
+        msg = data.get('message')
+        if not msg:
+            return "ok"
+
+        chat_id = msg['chat']['id']
+        text = (msg.get('text') or '').strip()
 
         if not is_authorized_chat(chat_id):
             return "ok"
@@ -274,12 +289,16 @@ def webhook():
             response = supabase.table("leads") \
                 .select("name, phone, service") \
                 .order("created_at", desc=True) \
+                .limit(5) \
                 .execute()
 
             leads = response.data
             if leads:
                 reply = "Останні 5 заявок:\n\n" + "\n\n".join(
-                    [f"👤 {l.get('name', '')}\n📞 {decrypt_value(l.get('phone', ''))}\n🛠 {l.get('service', '')}" for l in leads]
+                    f"👤 {escape(l.get('name') or '')}\n"
+                    f"📞 {escape(decrypt_value(l.get('phone') or ''))}\n"
+                    f"🛠 {escape(l.get('service') or '')}"
+                    for l in leads
                 )
             else:
                 reply = "Заявок немає."
@@ -288,16 +307,20 @@ def webhook():
             response = supabase.table("reviews") \
                 .select("name, role, review_text, rating") \
                 .order("created_at", desc=True) \
+                .limit(5) \
                 .execute()
 
             revs = response.data
             if revs:
                 lines = []
                 for r in revs:
-                    rating_val = r.get('rating') or 5
+                    rating_val = min(max(int(r.get('rating') or 5), 1), 5)
                     stars = '★' * rating_val + '☆' * (5 - rating_val)
-                    role_str = f" ({r.get('role')})" if r.get('role') else ""
-                    lines.append(f"👤 {r.get('name', '')}{role_str} {stars}\n💬 {r.get('review_text', '')}")
+                    role_str = f" ({escape(r['role'])})" if r.get('role') else ""
+                    lines.append(
+                        f"👤 {escape(r.get('name') or '')}{role_str} {stars}\n"
+                        f"💬 {escape(r.get('review_text') or '')}"
+                    )
                 reply = "Останні 5 відгуків:\n\n" + "\n\n".join(lines)
             else:
                 reply = "Відгуків немає."
@@ -305,13 +328,16 @@ def webhook():
         else:
             reply = "Невідома команда. Введіть /start для списку команд."
 
-        requests.post(
-            f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
-            data={"chat_id": chat_id, "text": reply, "parse_mode": "HTML"},
-            timeout=5
-        )
+        tg_send(chat_id, reply)
     except Exception as e:
         print(f"Webhook error: {e}")
+
+    return "ok"
+
+
+if __name__ == '__main__':
+    app.run(debug=False)
+ebhook error: {e}")
 
     return "ok"
 
