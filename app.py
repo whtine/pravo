@@ -337,36 +337,4 @@ def webhook():
 
 if __name__ == '__main__':
     app.run(debug=False)
-    return "ok"
-
-
-if __name__ == '__main__':
-    app.run(debug=False)
-    return "ok"
-
-
-if __name__ == '__main__':
-    app.run(debug=False)
- - rating_val)
-                    role_str   = f" ({r.get('role')})" if r.get('role') else ""
-                    lines.append(f"👤 {r.get('name', '')}{role_str} {stars}\n💬 {r.get('review_text', '')}")
-                reply = "Останні 5 відгуків:\n\n" + "\n\n".join(lines)
-            else:
-                reply = "Відгуків немає."
-
-        else:
-            reply = "Невідома команда. Введіть /start для списку команд."
-
-        requests.post(
-            f"https://api.telegram.org/bot{os.environ['TG_TOKEN']}/sendMessage",
-            data={"chat_id": chat_id, "text": reply, "parse_mode": "HTML"},
-            timeout=5
-        )
-    except Exception as e:
-        print(f"Webhook error: {e}")
-
-    return "ok"
-
-
-if __name__ == '__main__':
-    app.run(debug=False)
+    
